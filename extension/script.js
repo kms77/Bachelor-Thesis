@@ -1,5 +1,11 @@
-let color = '#3aa757';
-chrome.runtime.onInstalled.addListener(() => {	
-	chrome.storage.sync.set({color});
-        console.log('Default background color set to %cgreen', `color: ${color}`);
-});
+function sendRequest(){
+        let textToSend = document.getElementById("header-text-id");
+        console.log("Text to send: ", textToSend);
+        axios({
+                method: "post",
+                url: "https://test-python-heroku-app.herokuapp.com/data/",
+                data: {
+                  message: textToSend
+                }
+        });
+}
