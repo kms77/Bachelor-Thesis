@@ -1,3 +1,6 @@
+import axios from '../node_modules/axios/dist/axios'
+
+document.getElementById("request-button-id").addEventListener("click", sendRequest);
 function sendRequest(){
         let textToSend = document.getElementById("header-text-id");
         console.log("Text to send: ", textToSend);

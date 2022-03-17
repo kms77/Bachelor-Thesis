@@ -17,4 +17,4 @@ def favicon():
 def get_data():
     requested_data = request.get_json()
     message = requested_data['message']
-    return "<h3>Here we get the data!</h3><h3>The message is: {}</h3>".format(message)                              
+    return "<h3>The message is: {}</h3>".format(message)                              

@@ -1,4 +1,8 @@
 #extension-popup-id{
-	width: 40px;
-	height: 40px;
+	width: 160px;
+	height: 50px;
+}
+
+#extension-popup-id, #header-text-id, #request-button-id{
+	text-align: center;
 }
