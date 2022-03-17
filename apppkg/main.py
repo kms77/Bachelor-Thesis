@@ -1,6 +1,6 @@
+from __future__ import print_function
 import sys
 from flask import Flask, request
-from __future__ import print_function
 import os
 from flask import send_from_directory
 
