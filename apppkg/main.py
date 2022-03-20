@@ -15,9 +15,9 @@ def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static'),
                                'favicon.ico', mimetype='image/favicon.png')
 
-@app.route("/data/")
+@app.route("/data", methods=["GET", "POST"])
 def get_data():
-    requested_data = request.get_json()
-    print('Hello world! + {}'.format(requested_data), file=sys.stderr)
-    message = requested_data['message']
+    request_data = request.json
+    print('Hello world! + {}'.format(request_data), file=sys.stderr)
+    message = request_data['message']
     return "<h3>The message is: {}</h3>".format(message)                              
