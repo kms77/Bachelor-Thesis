@@ -5,7 +5,7 @@ from flask import send_from_directory
 
 app = Flask(__name__)
 
-@app.route("/data/",methods = ['POST'])
+@app.route("/data/",methods = ['POST', 'GET'])
 def get_data():
     if request.method == 'POST':
         request_data = request.json
@@ -14,11 +14,11 @@ def get_data():
     else:
         return "<h3>No post</h3>"   
 
-@app.route("/")
+@app.route("/",methods = ['POST', 'GET'])
 def root_page():
     return "<h1>Root Page</h1>"
 
-@app.route('/favicon.ico')
+@app.route('/favicon.ico',methods = ['POST', 'GET'])
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static'),
                                'favicon.ico', mimetype='image/favicon.png')
