@@ -3,9 +3,6 @@
 "description": "Example of requests to Heroku using AXIOS",
 "version": "1.0",
 "manifest_version": 3,
-"background": {
-	"service_worker": "script.js"
-},
 "permissions": ["storage", "activeTab", "scripting"],
 "action": {
         "default_popup": "source.html",
