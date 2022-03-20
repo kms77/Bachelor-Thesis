@@ -5,7 +5,7 @@ from flask import send_from_directory
 
 app = Flask(__name__)
 
-@app.route("/data")
+@app.route("/data/")
 def get_data():
     
     #request_data = request.json

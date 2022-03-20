@@ -6,7 +6,7 @@ function sendRequest(){
         console.log("Text to send: ", textToSend);
         axios({
                 method: "post",
-                url: "https://test-python-heroku-app.herokuapp.com/data",
+                url: "https://test-python-heroku-app.herokuapp.com/data/",
                 data: {
                   message: textToSend
                 }
