@@ -5,12 +5,14 @@ from flask import send_from_directory
 
 app = Flask(__name__)
 
-@app.route("/data/")
+@app.route("/data/",methods = ['POST'])
 def get_data():
-    
-    #request_data = request.json
-    #message = request_data['message']
-    return "<h3>The message is</h3>"   
+    if request.method == 'POST':
+        request_data = request.json
+        message = request_data['message']
+        return "<h3>The message is: {}</h3>".format(message)  
+    else:
+        return "<h3>No post</h3>"   
 
 @app.route("/")
 def root_page():
