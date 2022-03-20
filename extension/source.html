@@ -7,8 +7,22 @@
 	<body>
 		<div id="extension-popup-id">
 			<h3 id="header-text-id">Example of text</h3>
-			<button type="button" id="request-button-id">Send request</button>
+			<button type="button" id="request-button-id" onclick="sendRequest()">Send request</button>
 		</div>
 		<script type="module" src="script.js"></script>
 	</body>
+
+	<script>
+		function sendRequest(){
+        //let textToSend = document.getElementById("header-text-id");
+        //console.log("Text to send: ", textToSend);
+        axios({
+                method: "post",
+                url: "https://test-python-heroku-app.herokuapp.com/data/",
+                data: {
+                  message: "teest"
+                }
+        });
+}
+	</script>
 </html>
