@@ -2,13 +2,13 @@ import axios from '../node_modules/axios/dist/axios'
 
 document.getElementById("request-button-id").addEventListener("click", sendRequest);
 function sendRequest(){
-        let textToSend = document.getElementById("header-text-id");
-        console.log("Text to send: ", textToSend);
+        //let textToSend = document.getElementById("header-text-id");
+        //console.log("Text to send: ", textToSend);
         axios({
                 method: "post",
-                url: "https://test-python-heroku-app.herokuapp.com/data",
+                url: "https://test-python-heroku-app.herokuapp.com/data/",
                 data: {
-                  message: textToSend
+                  message: "teest"
                 }
         });
 }
