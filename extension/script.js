@@ -1,4 +1,5 @@
 import axios from '../node_modules/axios/dist/axios'
+import jquery from '../node_modules/jquery/dist/jquery'
 
 document.getElementById("request-button-id").addEventListener("click", sendRequest);
 // function sendRequest(){
