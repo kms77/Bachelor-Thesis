@@ -3,7 +3,20 @@
 "description": "Example of requests to Heroku using AXIOS",
 "version": "1.0",
 "manifest_version": 3,
-"permissions": ["storage", "activeTab", "scripting"],
+"permissions": ["scripting"],
+"background":{
+  "service-worker": ["./node_modules/jquery/dist/jquery.min.js"]
+},
+"content_security_policy": {
+  "extension_pages": "script-src 'self'; object-src 'self'; script-src-elem 'self' 'unsafe-inline' https://test-python-heroku-app.herokuapp/data/;"
+},
+"content_scripts": 
+    [
+        {
+            "matches":["https://test-python-heroku-app.herokuapp/data/"],
+            "js":["./node_modules/jquery/dist/jquery.min.js", "script.js"]
+        }
+],
 "action": {
         "default_popup": "source.html",
         "default_icon": {
