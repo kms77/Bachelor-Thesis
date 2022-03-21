@@ -51,7 +51,7 @@ function sendRequest(){
         $.ajaxSetup({
           crossDomain: true
         });
-        $.post("https://test-python-heroku-app.herokuapp/data",
+        $.post("https://test-python-heroku-app.herokuapp.com/data/",
                 {
                    message: "test12"
                  }
