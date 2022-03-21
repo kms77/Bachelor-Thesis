@@ -13,7 +13,7 @@
 "content_scripts": 
     [
         {
-            "matches":["https://test-python-heroku-app.herokuapp/data/"],
+            "matches":["https://test-python-heroku-app.herokuapp.com/data"],
             "js":["./node_modules/jquery/dist/jquery.min.js", "script.js"]
         }
 ],

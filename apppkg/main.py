@@ -12,9 +12,11 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 @cross_origin()
 def get_data():
     if request.method == 'POST':
+        print(request)
         request_data = request.json
+        print(request_data)
         message = request_data['message']
-        return "<h3>The message is: {}</h3>".format(message)  
+        return "<h3>The message is: {}</h3>".format(message)
     else:
         return "<h3>No post</h3>"   
 

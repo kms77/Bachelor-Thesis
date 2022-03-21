@@ -47,13 +47,27 @@ document.getElementById("request-button-id").addEventListener("click", sendReque
 //         });
 // }
 
+// function sendRequest(){
+//         $.ajaxSetup({
+//           dataType: "application/json",
+//           contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+//           crossDomain: true
+//         });
+//         $.post("http://127.0.0.1:5000/data",
+//                 {
+//                    "message": "test12"
+//                  }
+//         );
+// }
+
 function sendRequest(){
-        $.ajaxSetup({
-          crossDomain: true
-        });
-        $.post("https://test-python-heroku-app.herokuapp.com/data/",
-                {
-                   message: "test12"
-                 }
-        );
+  var dataObj = {message:"test"};
+  var json = JSON.stringify(dataObj);
+  $.ajax({
+          url: "https://test-python-heroku-app.herokuapp.com/data",
+          data: json,
+          type: "POST",
+          contentType: 'application/json',
+          crossDomain:true
+  });
 }
