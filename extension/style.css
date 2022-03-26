@@ -1,12 +1,24 @@
 #extension-popup-id{
-	width: 160px;
-	height: 50px;
+	width: 280px;
+	height: 250px;
+	text-align: left;
+	padding-left: 30px;
 }
 
-#extension-popup-id, #header-text-id, #request-button-id{
+#extension-header-id{
 	text-align: center;
+	padding: 0;
+	margin-bottom: 30px;
 }
 
-#header-text-id{
-	border-top: 2px solid black;
+#submit-button-id{
+	padding: 4px 16px;
+}
+
+.form-div-class{
+	margin-bottom: 10px;
+}
+
+.menu-class{
+	margin-bottom: 20px;
 }

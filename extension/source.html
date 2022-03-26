@@ -9,8 +9,22 @@
 	<head>
 	<body>
 		<div id="extension-popup-id">
-			<h3 id="header-text-id">Text to be send</h3>
-			<button type="button" id="request-button-id">Send request</button>
+			<h2 id="extension-header-id">Linkedin extension Menu</h2>
+			<div class="menu-class">
+				<form id="image-form-id" name="image-form-name">
+					<div class="form-div-class">
+						<label for="image-input"><b>Image URL: </b></label>
+						<input type="text" name="image-input" id="image-input-id">
+					</div>
+					<div class="form-div-class">
+						<button id="submit-button-id" type="button">Send</button>
+					</div>
+				</form>
+			</div>
+			<div class="menu-class">
+				<h3 class="float-left-class">The received data is: </h3>
+				<textarea id="response-textarea-id" rows = "3" cols = "30" name = "response-textarea"></textarea>
+			</div>
 		</div>
 		<script type="module" src="script.js"></script>
 	</body>

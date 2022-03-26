@@ -1,6 +1,6 @@
 //import axios from './node_modules/axios/index'
 //import axios from 'axios';
-var element = document.getElementById("request-button-id");
+var element = document.getElementById("submit-button-id");
 if(element){
   element.addEventListener('click', sendRequest, false);
 }
@@ -29,17 +29,23 @@ if(element){
 // }
 
 function sendRequest(){
-  var dataObj = { message: "test"};
-  axios({
-    method: 'POST',
-    url: 'http://127.0.0.1:5000/data',
-    data: dataObj,
-    crossDomain: true
-  }).then(function(response) {
-    console.log(response);
-    $('#header-text-id').html(response.data);
-  })
-  .catch(function(error){
-    $('#header-text-id').html("Error trying to make the action");
-  });
+ var inputValue = $('#image-input-id').val();
+  if(inputValue){ 
+    var dataObj = { image_URL: inputValue };
+    axios({
+      method: 'POST',
+      url: 'http://127.0.0.1:5000/data',
+      data: dataObj,
+      crossDomain: true
+    }).then(function(response) {
+      $('textarea#response-textarea-id').val(String(response.data));
+    })
+    .catch(function(error){
+      alert("Error trying to make the action");
+    });
+  }
+  else{
+    alert("Error: input value is null");
+
+  }
 }
