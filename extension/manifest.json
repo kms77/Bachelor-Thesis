@@ -4,17 +4,14 @@
 "version": "1.0",
 "manifest_version": 3,
 "permissions": ["scripting"],
-"background":{
-  "service-worker": ["./node_modules/jquery/dist/jquery.min.js"]
-},
 "content_security_policy": {
   "extension_pages": "script-src 'self'; object-src 'self'; script-src-elem 'self' 'unsafe-inline' https://test-python-heroku-app.herokuapp/data/;"
 },
 "content_scripts": 
     [
         {
-            "matches":["https://test-python-heroku-app.herokuapp.com/data"],
-            "js":["./node_modules/jquery/dist/jquery.min.js", "script.js"]
+            "matches":["http://127.0.0.1:5000/data"],
+            "js":["./node_modules/jquery/dist/jquery.min.js","./node_modules/axios/dist/axios.min.js", "script.js"]
         }
 ],
 "action": {

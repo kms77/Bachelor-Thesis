@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<meta http-equiv="Content-Security-Policy" content="default-src 'self' https://test-python-heroku-app.herokuapp.com; connect-src 'self' https://test-python-heroku-app.herokuapp.com">
+		<!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://test-python-heroku-app.herokuapp.com; connect-src 'self' https://test-python-heroku-app.herokuapp.com"> -->
+		<meta http-equiv="Content-Security-Policy" content="default-src 'self' http://127.0.0.1:5000; connect-src 'self' http://127.0.0.1:5000">
 		<link rel="stylesheet" href="style.css">
 		<script src="./node_modules/jquery/dist/jquery.min.js"></script>
+		<script src="./node_modules/axios/dist/axios.min.js"></script>
 	<head>
 	<body>
 		<div id="extension-popup-id">
-			<h3 id="header-text-id">Example of text</h3>
+			<h3 id="header-text-id">Text to be send</h3>
 			<button type="button" id="request-button-id">Send request</button>
 		</div>
 		<script type="module" src="script.js"></script>

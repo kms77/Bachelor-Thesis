@@ -1,5 +1,9 @@
 from __future__ import print_function
-from flask import Flask, request
+
+import json
+from urllib import response
+
+from flask import Flask, request, Response
 from flask_cors import CORS, cross_origin
 import os
 from flask import send_from_directory
@@ -11,14 +15,14 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 @app.route("/data",methods = ['POST', 'GET'])
 @cross_origin()
 def get_data():
+    message = "still no data"
     if request.method == 'POST':
-        print(request)
         request_data = request.json
         print(request_data)
         message = request_data['message']
-        return "<h3>The message is: {}</h3>".format(message)
-    else:
-        return "<h3>No post</h3>"   
+        print(message)
+        print(format(message))
+    return "Success! The server got message: " + message
 
 @app.route("/",methods = ['POST', 'GET'])
 def root_page():
