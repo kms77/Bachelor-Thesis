@@ -21,7 +21,7 @@ def get_data():
         request_data = request.json
         received_data = request_data['image_URL']
         try:
-            urllib.request.urlretrieve(received_data, "C:/Users/komsa/OneDrive/Desktop/Test Applications/Heroku-Test-Application/image/image.jpg")
+            urllib.request.urlretrieve(received_data, "C:/Users/komsa/OneDrive/Desktop/Bachelor-Thesis/Heroku-Test-Application/image/image.jpg")
         except urllib.error:
             return "Could not download image"
         print(received_data)
