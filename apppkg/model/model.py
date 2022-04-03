@@ -1,5 +1,8 @@
 import clip
 import os
+
+from IPython.core.display_functions import display
+from pydrive import files, auth
 from torch import nn
 import numpy as np
 import torch
@@ -11,6 +14,40 @@ from tqdm import tqdm, trange
 import skimage.io as io
 import PIL.Image
 from IPython.display import Image
+
+from pydrive.auth import GoogleAuth
+from pydrive.drive import GoogleDrive
+# from google.colab import auth
+from oauth2client.client import GoogleCredentials
+from transformers.models.marian.convert_marian_to_pytorch import unzip
+
+download_with_pydrive = True  # @param {type:"boolean"}
+
+
+class Downloader(object):
+    def __init__(self, use_pydrive):
+        self.use_pydrive = use_pydrive
+
+        if self.use_pydrive:
+            self.authenticate()
+
+    def authenticate(self):
+        auth.authenticate_user()
+        gauth = GoogleAuth()
+        gauth.credentials = GoogleCredentials.get_application_default()
+        self.drive = GoogleDrive(gauth)
+
+    def download_file(self, file_id, file_dst):
+        if self.use_pydrive:
+            downloaded = self.drive.CreateFile({'id': file_id})
+            downloaded.FetchMetadata(fetch_all=True)
+            downloaded.GetContentFile(file_dst)
+        # else:
+        #     !gdown - -id $file_id - O $file_dst
+
+
+downloader = Downloader(download_with_pydrive)
+
 
 N = type(None)  # N = NoneType(type of the None object - it indicates no value)
 A = np.array  # array
@@ -35,7 +72,6 @@ model_path = os.path.join(save_path, 'model_weights.pt')
 
 
 class MLP(nn.Module):
-    T = torch.Tensor
 
     def forward(self, x: T) -> T:
         return self.model(x)
@@ -54,7 +90,6 @@ class MLP(nn.Module):
 
 
 class ClipCaptionModel(nn.Module):
-    T = torch.Tensor
 
     def __init__(self, prefix_length: int, prefix_size: int = 512):
         super(ClipCaptionModel, self).__init__()
@@ -80,7 +115,7 @@ class ClipCaptionModel(nn.Module):
         print(prefix_projections.size())  # torch.Size([5, 1, 768])
         embedding_cat = torch.cat((prefix_projections, embedding_text), dim=1)
         if labels is not None:
-            dummy_token = self.get_dummy_token(tokens.shape[0])
+            dummy_token = self.get_dummy_token(tokens.shape[0], tokens.device)
             labels = torch.cat((dummy_token, tokens), dim=1)
         output = self.gpt(inputs_embeds=embedding_cat, labels=labels, attention_mask=mask)
         return output
@@ -154,3 +189,129 @@ def generate_beam(model, tokenizer, beam_size: int = 5, prompt=None, embed=None,
     order = scores.argsort(descending = True)
     output_texts = [output_texts[i] for i in order]
     return output_texts
+
+def generate2(
+        model,
+        tokenizer,
+        tokens=None,
+        prompt=None,
+        embed=None,
+        entry_count=1,
+        entry_length=67,  # maximum number of words
+        top_p=0.8,
+        temperature=1.,
+        stop_token: str = '.',
+):
+    model.eval()
+    generated_num = 0
+    generated_list = []
+    stop_token_index = tokenizer.encode(stop_token)[0]
+    filter_value = -float("Inf")
+    device = next(model.parameters()).device
+
+    with torch.no_grad():
+
+        for entry_idx in trange(entry_count):
+            if embed is not None:
+                generated = embed
+            else:
+                if tokens is None:
+                    tokens = torch.tensor(tokenizer.encode(prompt))
+                    tokens = tokens.unsqueeze(0).to(device)
+
+                generated = model.gpt.transformer.wte(tokens)
+
+            for i in range(entry_length):
+
+                outputs = model.gpt(inputs_embeds=generated)
+                logits = outputs.logits
+                logits = logits[:, -1, :] / (temperature if temperature > 0 else 1.0)
+                sorted_logits, sorted_indices = torch.sort(logits, descending=True)
+                cumulative_probs = torch.cumsum(nnf.softmax(sorted_logits, dim=-1), dim=-1)
+                sorted_indices_to_remove = cumulative_probs > top_p
+                sorted_indices_to_remove[..., 1:] = sorted_indices_to_remove[
+                                                    ..., :-1
+                                                    ].clone()
+                sorted_indices_to_remove[..., 0] = 0
+
+                indices_to_remove = sorted_indices[sorted_indices_to_remove]
+                logits[:, indices_to_remove] = filter_value
+                next_token = torch.argmax(logits, -1).unsqueeze(0)
+                next_token_embed = model.gpt.transformer.wte(next_token)
+                if tokens is None:
+                    tokens = next_token
+                else:
+                    tokens = torch.cat((tokens, next_token), dim=1)
+                generated = torch.cat((generated, next_token_embed), dim=1)
+                if stop_token_index == next_token.item():
+                    break
+
+            output_list = list(tokens.squeeze().cpu().numpy())
+            output_text = tokenizer.decode(output_list)
+            generated_list.append(output_text)
+
+    return generated_list[0]
+
+pretrained_model = 'Conceptual captions'  # @param ['COCO', 'Conceptual captions']
+
+if pretrained_model == 'Conceptual captions':
+  downloader.download_file("14pXWwB4Zm82rsDdvbGguLfx9F8aM7ovT", model_path)
+else:
+  downloader.download_file("1IdaBtMSvtyzF0ByVaBHtvM0JYSXRExRX", model_path)
+
+
+clip_model, preprocess = clip.load("ViT-B/32", jit=False)
+tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
+
+prefix_length = 10
+model = ClipCaptionModel(prefix_length)
+model.load_state_dict(torch.load(model_path,map_location=torch.device('cpu')))
+model = model.eval()
+model = model.to("cpu")
+
+uploaded = files.upload()
+if not uploaded:
+  UPLOADED_FILE = ''
+elif len(uploaded) == 1:
+  UPLOADED_FILE = list(uploaded.keys())[0]
+else:
+  raise AssertionError('Please upload one image at a time')
+
+print(UPLOADED_FILE)
+
+IMAGE_NAME = '165547'  # @param ['562207', '579664', '060623', '165547', '334321', '483108', '386164', '354533']
+
+name_ = "COCO_val2014_000000" + IMAGE_NAME + ".jpg"
+images_path = os.path.join(os.path.dirname(current_directory), "images")
+os.makedirs(images_path, exist_ok=True)
+UPLOADED_FILE = os.path.join(images_path, name_)
+
+# if not os.path.isfile(UPLOADED_FILE):
+#   download_path = os.path.join(images_path, "images.zip")
+#   downloader.download_file("1BwJeBME-dpwcCT8IXYeWz7uaPkbexjNB", download_path)
+#
+#   !unzip {download_path} -d {images_path}
+
+
+use_beam_search = False #@param {type:"boolean"}
+
+image = io.imread(UPLOADED_FILE)
+pil_image = PIL.Image.fromarray(image)
+pil_img = Image(filename=UPLOADED_FILE)
+display(pil_image)
+
+image = preprocess(pil_image).unsqueeze(0).to("cpu")
+with torch.no_grad():
+    # if type(model) is ClipCaptionE2E:
+    #     prefix_embed = model.forward_image(image)
+    # else:
+    prefix = clip_model.encode_image(image).to("cpu", dtype=torch.float32)
+    prefix_embed = model.clip_project(prefix).reshape(1, prefix_length, -1)
+if use_beam_search:
+    generated_text_prefix = generate_beam(model, tokenizer, embed=prefix_embed)[0]
+else:
+    generated_text_prefix = generate2(model, tokenizer, embed=prefix_embed)
+
+
+print('\n')
+print(generated_text_prefix)
