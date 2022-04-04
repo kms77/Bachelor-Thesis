@@ -1,0 +1,68 @@
+<html>
+  <head>
+    <style>
+      .google-visualization-orgchart-node-medium {
+        font-size: 0.9em;
+        margin: auto;
+      }
+    </style>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      startFunction();
+      function startFunction() {
+               setTimeout(function(){
+              google.charts.load('current', {packages:["orgchart"]});
+              google.charts.setOnLoadCallback(drawChart);
+              alert("Organigrama a fost creata!");
+            }, 500);
+      }
+      function drawChart(){
+        var data = new google.visualization.DataTable();
+        let mainCell = [" ", " "];
+        mainCell[0] = GetValue('#{FLD:4317}#');
+        mainCell[1] = GetValue('#{FLD:3703}#');
+        let lengthOfOrganigram = SubelementCountRows(#{WFCON:3711}#);
+        data.addColumn('string', 'Name');
+        data.addColumn('string', 'Manager');
+        data.addColumn('string', 'Department');
+        let printMethod = createPrintModel(mainCell[0], mainCell[1]);
+        data.addRows([[{'v': mainCell[0], 'f':printMethod}, '', '']]);
+        let position = " ";
+        let department = " ";
+        for(let index=0; index<lengthOfOrganigram; index ++){
+          position  = GetPairName(GetSubValue(#{WFCON:3711}#, index+1, '#{SFLD:745}#'));
+          department = GetSubValue(#{WFCON:3711}#, index+1, '#{SFLD:740}#');
+          printMethod = createPrintModel(position, department);
+          position= concatEmptySpace(position, index);
+          console.log(position+ "--------"+ (position.toString().length));
+          data.addRows([[{'v': position, 'f': printMethod}, mainCell[0], '']]);
+        }
+        var chart = new google.visualization.OrgChart(document.getElementById('chart_div'));
+        chart.draw(data, {
+                    'allowHtml':true, 
+                    'size': 'medium', 
+                  });
+      }
+    function createPrintModel(position, department){
+      let initialValue = '<div style="black: ; font-style: italic; font-weight: bold; margin: auto;">';
+      let secondPart = '</div><hr>';
+      initialValue = initialValue.concat(position.concat(secondPart.concat(department)));
+      return initialValue;
+    }
+    function concatEmptySpace(position, numberOfTimes){
+      const emptySpace = " ";
+      for(let index = 0; index< numberOfTimes; index++){
+        position = position.concat(emptySpace);
+      }
+      //console.log(position.length);
+      return position;
+    }
+    /*function acronym(str) {
+    return str.toLowerCase().match(/(\b[a-z])/g).join('');
+    }*/
+    </script>
+    </head>
+  <body>
+    <div id="chart_div"></div>
+  </body>
+</html>
