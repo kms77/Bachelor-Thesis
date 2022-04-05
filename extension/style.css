@@ -1,0 +1,24 @@
+#extension-popup-id{
+	width: 280px;
+	height: 250px;
+	text-align: left;
+	padding-left: 30px;
+}
+
+#extension-header-id{
+	text-align: center;
+	padding: 0;
+	margin-bottom: 30px;
+}
+
+#submit-button-id{
+	padding: 4px 16px;
+}
+
+.form-div-class{
+	margin-bottom: 10px;
+}
+
+.menu-class{
+	margin-bottom: 20px;
+}
