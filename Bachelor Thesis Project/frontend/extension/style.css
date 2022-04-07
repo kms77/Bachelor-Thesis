@@ -1,0 +1,89 @@
+html{
+    background-color: white;
+    border: 1px solid black;
+}
+
+body{
+    width: 400px;
+	height: 300px;
+    background-color: #f8f8f8;
+    border: 1px solid black;
+}
+
+#head-container{
+    display: table;
+    margin: 20px;
+    width: 100%;
+}
+
+#head-block{
+     display: table-row;
+}
+
+#logo-container{
+    float: left;
+    display: table-cell;
+    width: 60%;
+}
+
+.logo-block__element{
+    margin: 0;
+}
+
+h1.logo-block__element{
+    font-size: 35px;
+}
+
+#menu-container{
+    float: right;
+    cursor: pointer;
+    display: table-cell;
+    margin-right: 30px;
+}
+
+
+.menu-block__button{
+    width: 40px;
+    height: 40px;
+    background-color: #0099CC;
+    color: white;
+    font-size: 20px;
+    text-align: center;
+    display: block;
+}
+
+#on-off-block--toggle{
+    width: 100px;
+    height: 30px;
+    border-radius: 30px;
+    padding: 5px;
+    background-color: gray;
+    transition: all 300ms ease-in-out;
+}
+
+#on-off-block--toggle > #on-off-block__circle{
+    width: 50px;
+    height: 30px;
+    background-color: #fff;
+    border-radius: 50%;
+    transition: all 300ms ease-in-out;
+    margin: 0;
+}
+
+#on-off-block--toggle.active{
+    background-color: #0099CC;
+}
+
+#on-off-block--toggle.active > #on-off-block__circle{
+    margin-left: 50px;
+}
+
+#on-off-block--toggle.active > #on-off-block__text{
+    margin: 0;
+}
+
+#on-off-block--toggle > #on-off-block__text{
+    margin-left: 50px;
+    transition: all 300ms ease-in-out;
+}
+

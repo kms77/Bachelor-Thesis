@@ -21,8 +21,9 @@ def get_data():
         received_data = request_data['image_URL']
         try:
             urllib.request.urlretrieve(received_data, "./app/utils/image/image.jpg")
-        except urllib.error:
-            return "Could not download image"
+        except urllib.error.URLError as error:
+            error_message = error.read().decode("utf8", "ignore")
+            return "Could not download image: " + error_message
         image_caption = Captioning().get_image_caption()
         os.remove("./app/utils/image/image.jpg")
     return image_caption
