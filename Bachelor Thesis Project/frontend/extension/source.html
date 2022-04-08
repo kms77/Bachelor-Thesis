@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <!-- <meta charset= utf-8 meta name= viewport content= width=device-width initial-scale=1> -->
-        <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self' http://127.0.0.1:5000; connect-src 'self' http://127.0.0.1:5000"> -->
+        <meta charset= utf-8 meta name= viewport content= width=device-width initial-scale=1>
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self' http://127.0.0.1:5000;"> <!--connect-src 'self' http://127.0.0.1:5000"> -->
         <link rel="stylesheet" href="style.css">
         <script src="./node_modules/jquery/dist/jquery.min.js"></script>
 		<script src="./node_modules/axios/dist/axios.min.js"></script>
@@ -25,10 +25,24 @@
             </div>
         </div>
         <div id="body-container">
+            <div id="form-block" class="body-container__element">
+				<form id="form-block__element" name="send-image-form">
+					<div class="form-block__data">
+						<label id="fom-block__label" for="imageURL-input"><b>Image URL: </b></label>
+						<input id="form-block__input" name="imageURL-input" type="text">
+						<button id="form-block__submit" type="button">Send</button>
+					</div>
+				</form>
+			</div>
+            <div id="textarea-block" class="body-container__element">
+				<h3 class="textarea-block_element">The received data is:</h3>
+				<textarea id="textarea-block__id" class="textarea-block_element" rows = "2" cols = "45" name = "response-textarea"></textarea>
+			</div>
+        </div>
+        <div id="app-status-container">
             <div id="on-off-block">
-                <div id="on-off-block--toggle" onclick="this.classList.toggle('active')">
+                <div id="on-off-block--toggle">
                     <div id="on-off-block__circle"></div>
-                    <h2 id="on-off-block__text">OFF</h2>
                 </div>
             </div>
         </div>

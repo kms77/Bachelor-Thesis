@@ -5,15 +5,22 @@ html{
 
 body{
     width: 400px;
-	height: 300px;
+	height: 350px;
     background-color: #f8f8f8;
     border: 1px solid black;
 }
 
 #head-container{
     display: table;
-    margin: 20px;
+    margin-top: 20px;
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-bottom: 40px;
     width: 100%;
+}
+
+#body-container{
+    margin-left: 20px;
 }
 
 #head-block{
@@ -52,38 +59,56 @@ h1.logo-block__element{
     display: block;
 }
 
+
 #on-off-block--toggle{
-    width: 100px;
-    height: 30px;
-    border-radius: 30px;
+    width: 70px;
+    height: 25px;
     padding: 5px;
-    background-color: gray;
+    bottom: 0;
+    right: 0;
+    border-radius: 45px;
+    position: fixed;
+    margin-bottom: 25px;
+    margin-right: 25px;
+    background-color: #0099CC;
     transition: all 300ms ease-in-out;
 }
 
+
 #on-off-block--toggle > #on-off-block__circle{
-    width: 50px;
-    height: 30px;
+    width: 30px;
+    height: 25px;
     background-color: #fff;
     border-radius: 50%;
     transition: all 300ms ease-in-out;
+    margin-top: 0;
+    margin-bottom: 0;
+    margin-right: 0;
+    margin-left: 40px;
+}
+
+
+#on-off-block--toggle.inactive{
+    background-color: gray;
+}
+
+#on-off-block--toggle.inactive > #on-off-block__circle{
     margin: 0;
 }
 
-#on-off-block--toggle.active{
+#fom-block__label{
+    font-size: 16px;
+}
+
+#form-block__submit{
     background-color: #0099CC;
+    color: white;
+    padding: 5px 15px;
+    font-size: 14px;
+    font-weight: bold;
+    margin-left: 15px;
 }
 
-#on-off-block--toggle.active > #on-off-block__circle{
-    margin-left: 50px;
+.body-container__element{
+    margin-bottom: 20px;
 }
-
-#on-off-block--toggle.active > #on-off-block__text{
-    margin: 0;
-}
-
-#on-off-block--toggle > #on-off-block__text{
-    margin-left: 50px;
-    transition: all 300ms ease-in-out;
-}
-

@@ -3,6 +3,12 @@
     "description": "Chrome extension tool for visually impaired people.",
     "version": "1.0",
     "manifest_version": 3,
+    "content_scripts": [
+            {
+                "matches": ["http://127.0.0.1:5000/data"],
+                "js":["./node_modules/jquery/dist/jquery.min.js","./node_modules/axios/dist/axios.min.js"]
+            }
+    ],
     "action": {
         "default_popup": "source.html",
         "default_icon": {
