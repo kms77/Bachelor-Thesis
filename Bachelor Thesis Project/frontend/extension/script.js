@@ -25,8 +25,8 @@ function sendRequest(){
        var dataObject = { image_URL: inputValue };
        axios({
          method: 'POST',
-         url: 'https://hear-me-assistant.herokuapp.com/data',
-         //url: 'http://127.0.0.1:5000/data',
+        //  url: 'https://hear-me-assistant.herokuapp.com/data',
+         url: 'http://127.0.0.1:5000/data',
          data: dataObject,
          crossDomain: true
        }).then(function(response) {
