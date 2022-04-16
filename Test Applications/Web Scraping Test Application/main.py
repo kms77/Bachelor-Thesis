@@ -5,10 +5,8 @@ import urllib3
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 
-username = ''
-password = ''
-username = 'komsaatti@yahoo.com'
-password = 'X2x^xd-ecX_v-p/'
+username = '<username>'
+password = '<password>'
 browserDriver = webdriver.Chrome('chromedriver100.exe')
 browserDriver.get('https://www.linkedin.com/login?fromSignIn=true&trk=guest_homepage-basic_nav-header-signin')
 
