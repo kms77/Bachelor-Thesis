@@ -5,8 +5,8 @@ import urllib3
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 
-username = '<username>'
-password = '<password>'
+username = 'komsaatti@yahoo.com'
+password = 'X2x^xd-ecX_v-p/'
 browserDriver = webdriver.Chrome('chromedriver100.exe')
 browserDriver.get('https://www.linkedin.com/login?fromSignIn=true&trk=guest_homepage-basic_nav-header-signin')
 
@@ -19,10 +19,10 @@ authenticationID.send_keys(password)
 # Connect to the account
 authenticationID.submit()
 
-# numberOfScrolls = 30
-# for i in range(1, numberOfScrolls):
-#     browserDriver.execute_script("window.scrollTo(1,50000)")
-#     time.sleep(5)
+numberOfScrolls = 30
+for i in range(1, numberOfScrolls):
+    browserDriver.execute_script("window.scrollTo(1,50000)")
+    time.sleep(5)
 http = urllib3.PoolManager()
 
 pageSource = browserDriver.page_source
