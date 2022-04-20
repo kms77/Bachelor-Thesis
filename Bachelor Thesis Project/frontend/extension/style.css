@@ -114,3 +114,8 @@ h1.logo-block__element{
 .body-container__element{
     margin-bottom: 20px;
 }
+
+#textarea-block__id{
+    overflow-y: scroll;
+    resize: none;
+}

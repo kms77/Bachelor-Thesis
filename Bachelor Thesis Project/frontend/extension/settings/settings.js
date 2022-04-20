@@ -15,18 +15,12 @@ async function saveCredentials(){
         var credentials = {};
         credentials['username'] = usernameCredentials;
         credentials['password'] = passwordCredentials;
-        await chrome.storage.sync.set( credentials, function (){
+        console.log("Credentials from input: ", credentials);
+        await chrome.storage.sync.set( credentials, function (data){
             if(chrome.runtime.lastError){
                 console.error("Error: ", chrome.lastError.message);
             }
+            console.log("Data: ", data);
         });
-
-        // get(null) - to get all values
-        // var currentCredentials = await chrome.storage.sync.get(null, function(){
-        //     if(chrome.runtime.lastError){
-        //         console.error("Error: ", chrome.lastError.message);
-        //     }
-        // });
-        // console.log("Credentials: ", currentCredentials);
     }
 }

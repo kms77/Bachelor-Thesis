@@ -26,11 +26,7 @@ function changeAppStatus(){
 async function sendRequest(){
     // var inputValue = $('#form-block__input').val();
     // get(null) - to get all values
-    var currentCredentials = await chrome.storage.sync.get(null, function(){
-        if(chrome.runtime.lastError){
-            console.error("Error: ", chrome.lastError.message);
-        }
-    });
+    var currentCredentials = await chrome.storage.sync.get(null);
     console.log("Credentials: ", currentCredentials);
     if(currentCredentials){ 
        var dataObject = { 

@@ -13,7 +13,7 @@ from model.model import ClipCaptionModel
 T = torch.Tensor
 
 
-class Captioning():
+class Captioning:
     def generate_beam(self, model, tokenizer, beam_size: int = 5, prompt=None, embed=None, entry_length=67,
                       temperature=1., stop_token: str = '.'):
         model.eval()

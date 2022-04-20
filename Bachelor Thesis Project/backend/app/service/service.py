@@ -18,8 +18,6 @@ def get_data():
         request_data = request.json
         usernameCredentials = request_data['username']
         passwordCredentials = request_data['password']
-        print("usernameCredentials: ", usernameCredentials)
-        print("passwordCredentials: ", passwordCredentials)
         result = Scraping().scraping_data(usernameCredentials, passwordCredentials)
         print("Result: ", result)
     return result

@@ -7,11 +7,12 @@ from captioning.captioning import Captioning
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 
-class Scraping():
+
+class Scraping:
     def scraping_data(self, usernameCredential, passwordCredential):
         username = usernameCredential
         password = passwordCredential
-        browserDriver = webdriver.Chrome('../utils/chrome_drivers/chromedriver100.exe')
+        browserDriver = webdriver.Chrome('./utils/chrome_drivers/chromedriver100.exe')
         browserDriver.get('https://www.linkedin.com/login?fromSignIn=true&trk=guest_homepage-basic_nav-header-signin')
 
         # Get username spot and fill it
@@ -22,10 +23,10 @@ class Scraping():
         authenticationID.send_keys(password)
         # Connect to the account
         authenticationID.submit()
-        numberOfScrolls = 10
-        for i in range(1, numberOfScrolls):
-            browserDriver.execute_script("window.scrollTo(1,50000)")
-            time.sleep(5)
+        # numberOfScrolls = 5
+        # for i in range(1, numberOfScrolls):
+        #     browserDriver.execute_script("window.scrollTo(1,50000)")
+        #     time.sleep(5)
         # http = urllib3.PoolManager()
         pageSource = browserDriver.page_source
         soup = BeautifulSoup(pageSource, 'html.parser')
@@ -55,7 +56,10 @@ class Scraping():
         scraping_output = ''
         for links in soup.find_all('div', {'class': 'feed-shared-update-v2'}):
             profileName = (links.find('span', {'class': 'feed-shared-actor__name'}).getText()).replace("\n", "")
-            postDescription = (links.find('div', {'class': 'feed-shared-text'}).getText()).replace("\n", "")
+            try:
+                postDescription = (links.find('div', {'class': 'feed-shared-text'}).getText()).replace("\n", "")
+            except:
+                postDescription = 'this post does not have a description'
             maxBound = len(profileIntros) - 1
             allPostDescription = profileName
             randomIndex = random.randint(0, maxBound)
@@ -67,7 +71,7 @@ class Scraping():
                 allPostDescription = profileIntros[int(randomIndex)] + profileName + ". "
                 if allPostDescription != '':
                     randomIndex = random.randint(0, int(maxBound / 2))
-                    allPostDescription = allPostDescription + descriptionIntros[randomIndex] + postDescription + " ."
+                    allPostDescription = allPostDescription + descriptionIntros[randomIndex] + postDescription + ". "
                 try:
                     imageURL = (links.find('img', {'class': 'feed-shared-image__image'}).get('src')).replace("\n", "")
                     try:
@@ -82,6 +86,7 @@ class Scraping():
                 except:
                     pass
                 # print("No image")
-            scraping_output += allPostDescription
+            scraping_output = scraping_output + allPostDescription + '\n'
+        browserDriver.implicitly_wait(50000)
         return scraping_output
         # browserDriver.close()
