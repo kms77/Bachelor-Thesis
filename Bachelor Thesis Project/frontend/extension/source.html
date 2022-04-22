@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset= utf-8 meta name= viewport content= width=device-width initial-scale=1>
-        <meta http-equiv="Content-Security-Policy" content="default-src 'self' http://127.0.0.1:5000/data"> <!--http://127.0.0.1:5000;"> connect-src 'self' http://127.0.0.1:5000"> -->
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self' http://127.0.0.1:5000/data http://127.0.0.1:5000/images"> <!--http://127.0.0.1:5000;"> connect-src 'self' http://127.0.0.1:5000"> -->
         <link rel="stylesheet" href="style.css">
         <script src="./node_modules/jquery/dist/jquery.min.js"></script>
 		<script src="./node_modules/axios/dist/axios.min.js"></script>
@@ -18,7 +18,7 @@
                 </div>
                 <div id="menu-container">
                     <div id="menu-block">
-                        <button class="menu-block__button" type="button"><span>&#8505;</span></button>
+                        <button class="menu-block__button" id="menu-block__info_button" type="button"><span>&#8505;</span></button>
                         <button class="menu-block__button" id= "menu-block__settings_button" type="button"><span>&#9881;</span></button>
                     </div>
                 </div>

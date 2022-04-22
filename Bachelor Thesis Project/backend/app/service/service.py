@@ -5,6 +5,9 @@ from flask_cors import CORS, cross_origin
 import os
 from flask import send_from_directory
 from scraping.scraping import Scraping
+from captioning.captioning import Captioning
+import urllib
+
 
 app = Flask(__name__)
 cors = CORS(app)
@@ -21,6 +24,31 @@ def get_data():
         result = Scraping().scraping_data(usernameCredentials, passwordCredentials)
         print("Result: ", result)
     return result
+
+@app.route("/images",methods = ['POST', 'GET'])
+@cross_origin()
+def get_images():
+    # result = {}
+    # allCaptions = []
+    imageCaption = ""
+    if request.method == 'POST':
+        request_data = request.json
+        imageURL = request_data['imageURL']
+        # allImages = request_data['images']
+        print(imageURL)
+        urllib.request.urlretrieve(imageURL, "./utils/image/image.jpg")
+        imageCaption = Captioning().get_image_caption()
+        os.remove("./utils/image/image.jpg")
+    #     for src in allImages:
+    #         urllib.request.urlretrieve(src, "./utils/image/image.jpg")
+    #         imageCaption = Captioning().get_image_caption()
+    #         os.remove("./utils/image/image.jpg")
+    #         allCaptions.append(imageCaption)
+    # print("\n")
+    # print(allCaptions)
+    # result['data'] = allCaptions
+    print("Image Caption: " + imageCaption)
+    return imageCaption
 
 @app.route("/",methods = ['POST', 'GET'])
 def root_page():
