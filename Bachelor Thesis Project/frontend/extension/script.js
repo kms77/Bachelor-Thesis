@@ -24,8 +24,7 @@ async function getPageData(){
     target: { tabId: tab.id },
     function: getAllImages
   }, (result) => {
-    sendImages(result);
-    //getImageCaption(result)
+    sendImages(result, tab);
   });
 }
 
@@ -33,26 +32,21 @@ function getAllImages(){
   var images = document.getElementsByTagName("img");
   console.log("Images: ", images);
   var allImages = Array.prototype.slice.call(images);
-  let image = allImages[0];
-  // allImages[0] = "<img src=\"http://www.cs.ubbcluj.ro/wp-content/themes/CSUBB/images/social-profiles/youtube.png\" alt=\"Youtube\" title=\"Youtube\">";
-  allImages[0] = "<img src=\"http://www.cs.ubbcluj.ro/wp-content/themes/CSUBB/images/social-profiles/youtube.png\" title=\"Youtube\">";
-  for(var index = 1; index<allImages.length; index++){
-    let image = allImages[index];
-    allImages[index] = image.outerHTML;
+  allImages[0].removeAttribute("alt");
+  allImages[1].alt = "      \n";
+  var imageData = new Object();
+  for(var index = 0; index<allImages.length; index++){
+    imageData['src'] = String(allImages[index].src);
+    let imageAlt = String(allImages[index].alt);
+    if(!imageAlt.replace(/\s/g, '').length){
+      imageAlt = imageAlt.replace(/\s/g, '');
+      console.log("Alt only contains whitespace (ie. spaces, tabs or line breaks)");
+    }
+    imageData['alt'] = imageAlt;
+    imageData['code'] = allImages[index].outerHTML;
+    allImages[index] = imageData;
+    imageData = new Object();
   }
-  // var allImages = [];
-  // for(var index = 0; index<images.length; index++){
-  //   allImages.push(images[index].src);
-  //   // if(index < 5){
-  //   //   let imageCaption = getImageCaption(images[index].src);
-  //   //   console.log("Image caption: ", imageCaption);
-  //   // }
-  // }
-    // console.log("ALT: ", images[index].alt);
-    // if(images[index].alt === ""){
-    //   // allImages.push(images[index].src);
-    //   // console.log("Added!");
-    // }
   console.log("All img: ", allImages);
   return allImages;
 }
@@ -75,19 +69,25 @@ async function getImageCaption(imageSrc){
   return imageCaption;
 }
 
-async function sendImages(result){
-  console.log("Result: ", result);
-  var images = result[0];
-  images = images['result'];
-  console.log("Result2: \n", images);
-  var imageCaptionText = "";
-  for(var index = 0; index<5; index++){
-    let imageSrc = (images[index].split('src="').pop()).split('"')[0];
+async function sendImages(result, tab){
+  var allImages = result[0];
+  allImages = allImages['result'];
+  console.log("Images: \n", allImages);
+  for(var index = 0; index<allImages.length; index++){
+    let imageSrc = (allImages[index])['src'];
+    let imageAlt = (allImages[index]['alt']);
     console.log("Index: ", index, " | ImageSrc: ", imageSrc);
     let imageCaption = await getImageCaption(imageSrc);
-    imageCaptionText = (" Image caption: ").concat(imageCaption);
-    console.log("Image caption before execute script: ", imageCaptionText);
+    imageAlt = imageAlt.concat((" Image caption: ").concat(imageCaption));
+    console.log("Image caption before execute script: ", imageAlt);
+    (allImages[index])['alt'] = imageAlt;
+    chrome.scripting.executeScript({
+        target: { tabId: tab.id },
+        function: addAlternativeText,
+        args: [allImages[index]]
+      });
   }
+  console.log("All Images: ", allImages);
   // console.log("Images Array: ", images);
   //     let imageObject = images[index].src;
   //     console.log("Img src: ", imageObject);
@@ -104,33 +104,19 @@ async function sendImages(result){
   //   }
   // }
 }
-
-
-// function addAlternativeText(imageCaptionText){
-
-// }
-
-
-
-// function sendImages(result){
-//   var allImages = result[0]
-//   allImages = allImages['result']
-//   console.log("Result: \n", allImages)
-//   var dataObject = {
-//     images: allImages
-//   };
-//   axios({
-//     method: 'POST',
-//    //  url: 'https://hear-me-assistant.herokuapp.com/data',
-//     url: 'http://127.0.0.1:5000/images',
-//     data: dataObject,
-//     crossDomain: true
-//   }).then(function(response) {
-//       response=String(response.data);
-//       console.log(typeof String(response));
-//       console.log(response);
-//   });
-// }
+function addAlternativeText(image){
+  // var div = document.createElement('div');
+  // div.innerHTML = image['code'];
+  // console.log("Div: ", div, " | Img: ", div.getElementsByTagName('img'));
+  // var imageHTML = div.getElementsByTagName('img')[0];
+  // imageHTML.alt = image['alt'];
+  const selector  = ('img[src="'.concat(image['src'])).concat('"]');
+  console.log("Selector: ", selector);
+  var selectedImages = document.querySelectorAll(selector);
+  selectedImages.forEach( imageElement => {
+    imageElement.setAttribute('alt', image['alt']);
+  });
+}
 
 function changeAppStatus(){
     if($(appStatus).hasClass('inactive')){
@@ -144,7 +130,6 @@ function changeAppStatus(){
 }
 
 async function sendRequest(){
-    // var inputValue = $('#form-block__input').val();
     // get(null) - to get all values
     var currentCredentials = await chrome.storage.sync.get(null);
     console.log("Credentials: ", currentCredentials);
