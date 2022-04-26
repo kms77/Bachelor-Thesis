@@ -3,6 +3,9 @@ var submitButton = document.getElementById("form-block__submit");
 var settingsButton = document.getElementById("menu-block__settings_button");
 var infoButton = document.getElementById("menu-block__info_button");
 
+var lastKnownScrollPosition = 0;
+
+
 if(appStatus){
     appStatus.addEventListener('click', changeAppStatus, false);
 }
@@ -16,40 +19,48 @@ if(infoButton){
   settingsButton.addEventListener('click', goToInfo, false);
 }
 
+
 window.onload = getPageData();
 
 async function getPageData(){
   let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   chrome.scripting.executeScript({
     target: { tabId: tab.id },
-    function: getAllImages
+    files: ['scrollEvent.js']
+    // function: getAllImages
   }, (result) => {
+    console.log("Result: ", result);
     sendImages(result, tab);
   });
 }
 
-function getAllImages(){
-  var images = document.getElementsByTagName("img");
-  console.log("Images: ", images);
-  var allImages = Array.prototype.slice.call(images);
-  allImages[0].removeAttribute("alt");
-  allImages[1].alt = "      \n";
-  var imageData = new Object();
-  for(var index = 0; index<allImages.length; index++){
-    imageData['src'] = String(allImages[index].src);
-    let imageAlt = String(allImages[index].alt);
-    if(!imageAlt.replace(/\s/g, '').length){
-      imageAlt = imageAlt.replace(/\s/g, '');
-      console.log("Alt only contains whitespace (ie. spaces, tabs or line breaks)");
-    }
-    imageData['alt'] = imageAlt;
-    imageData['code'] = allImages[index].outerHTML;
-    allImages[index] = imageData;
-    imageData = new Object();
+async function sendImages(result, tab){
+  console.log("Result: ", result);
+  var allImages = result[0];
+  allImages = allImages['result'];
+  console.log("Images: \n", allImages);
+  for(let index=0; index<allImages.length; index++){
+    console.log("ImageSrc: ", (allImages[index])['src']);
+    let imageCaption = await getImageCaption((allImages[index])['src']);
+    (allImages[index])['alt'] = ((allImages[index])['alt']).concat((" Image caption: ").concat(imageCaption));
+    console.log("Image caption before execute script: ", (allImages[index])['alt']);
+    chrome.scripting.executeScript({
+        target: { tabId: tab.id },
+        function: addAlternativeText,
+        args: [allImages[index]]
+      });
   }
-  console.log("All img: ", allImages);
-  return allImages;
+  console.log("All Images: ", allImages);
 }
+
+function addAlternativeText(image){
+  const selector  = ('img[src="'.concat(image['src'])).concat('"]');
+  console.log("Selector: ", selector);
+  var selectedImages = document.querySelectorAll(selector);
+  selectedImages.forEach( imageElement => {
+    imageElement.setAttribute('alt', image['alt']);
+  });
+} 
 
 async function getImageCaption(imageSrc){
   var imageCaption = "";
@@ -67,55 +78,6 @@ async function getImageCaption(imageSrc){
       imageCaption = response;
   });
   return imageCaption;
-}
-
-async function sendImages(result, tab){
-  var allImages = result[0];
-  allImages = allImages['result'];
-  console.log("Images: \n", allImages);
-  for(var index = 0; index<allImages.length; index++){
-    let imageSrc = (allImages[index])['src'];
-    let imageAlt = (allImages[index]['alt']);
-    console.log("Index: ", index, " | ImageSrc: ", imageSrc);
-    let imageCaption = await getImageCaption(imageSrc);
-    imageAlt = imageAlt.concat((" Image caption: ").concat(imageCaption));
-    console.log("Image caption before execute script: ", imageAlt);
-    (allImages[index])['alt'] = imageAlt;
-    chrome.scripting.executeScript({
-        target: { tabId: tab.id },
-        function: addAlternativeText,
-        args: [allImages[index]]
-      });
-  }
-  console.log("All Images: ", allImages);
-  // console.log("Images Array: ", images);
-  //     let imageObject = images[index].src;
-  //     console.log("Img src: ", imageObject);
-  //     let imageCaptionText = "Image caption: ";
-  //     let imageCaption = getImageCaption(imageObject);
-  //     imageCaptionText.concat(imageCaption);
-  //     imageObject.alt = imageCaptionText;
-  //     console.log("Image caption before execute script: ", imageObject);
-  //     // chrome.scripting.executeScript({
-  //     //   target: { tabId: tab.id },
-  //     //   function: addAlternativeText(imageCaptionText),
-  //     //   args: [imageSrc, ]
-  //     // });
-  //   }
-  // }
-}
-function addAlternativeText(image){
-  // var div = document.createElement('div');
-  // div.innerHTML = image['code'];
-  // console.log("Div: ", div, " | Img: ", div.getElementsByTagName('img'));
-  // var imageHTML = div.getElementsByTagName('img')[0];
-  // imageHTML.alt = image['alt'];
-  const selector  = ('img[src="'.concat(image['src'])).concat('"]');
-  console.log("Selector: ", selector);
-  var selectedImages = document.querySelectorAll(selector);
-  selectedImages.forEach( imageElement => {
-    imageElement.setAttribute('alt', image['alt']);
-  });
 }
 
 function changeAppStatus(){
@@ -146,9 +108,7 @@ async function sendRequest(){
          crossDomain: true
        }).then(function(response) {
            let errorMessage = "";
-           // console.log(typeof errorMessage);
            response=String(response.data);
-           // console.log(typeof String(response));
            if(response.indexOf(errorMessage) !== -1){
                 alert(response);
            }
