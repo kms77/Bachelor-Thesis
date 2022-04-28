@@ -1,46 +1,30 @@
 let lastKnownScrollPosition = 0;
-// let isInitialCall = true; 
-// onEntry();
-
-
-document.addEventListener('scroll',  async function() {
-    let currentScrollPosition = window.scrollY;
-    if(currentScrollPosition>= lastKnownScrollPosition + 500)
-    {
-      lastKnownScrollPosition = currentScrollPosition;
-      console.log("ON SCROLL!!! ", lastKnownScrollPosition);
-      await onEntry();
-    }
-  });
-
-//   function onEntry(){
-//     console.log("Initial Call!", "")
-//     if((lastKnownScrollPosition < 500) && (isInitialCall)){
-//       isInitialCall  = false;
-//       return testFunction(1);
-//     }
-//   }
-
-//   function testFunction(value){
-//     console.log("Test function!", value);
-//     return ("Value: ").concat(String(value));
-//   }
-
+var checkDuplicates = new Map();
 onEntry();
 
 async function onEntry(){
+  document.removeEventListener('scroll', onScroll);
   let result = await getAllImages();
-  let status = await sendImages(result);
-  console.log("Status: ", status);
+  await sendImages(result);
+  await onScroll();
+}
+
+async function onScroll() {
+  console.log("33333333333333333333333333333333333333333333333333333333333");
+  document.addEventListener('scroll', onScroll, true);
+  let currentScrollPosition = window.scrollY;
+  if(currentScrollPosition>= lastKnownScrollPosition + 2000)
+  {
+    lastKnownScrollPosition = currentScrollPosition;
+    await onEntry();
+  }
 }
 
 async function getAllImages(){
-
+  console.log("111111111111111111111111111111111111111111111111111111111");
   var imageCollection = document.getElementsByTagName("img");
-  console.log("Images: ", imageCollection);
   var images = Array.prototype.slice.call(imageCollection);
   var allImages = [];
-  var checkDuplicates = new Map();
   for(var index = 0; index<images.length; index++){
     let invalidURL = false;
     images[index].addEventListener('error', function handleError(){
@@ -51,8 +35,9 @@ async function getAllImages(){
     (images[index].clientHeight>=50 && images[index].clientWidth>=50) && (!invalidURL)){
       let imageSrc = String(images[index].src);
       let imageAlt = String(images[index].alt);
-      if(!imageAlt.replace(/\s/g, '').length){
-        imageAlt = imageAlt.replace(/\s/g, '');
+      let auxiliarAlt = imageAlt;
+      if(!auxiliarAlt.replace(/\s/g, '').length){
+        imageAlt = auxiliarAlt.replace(/\s/g, '');
         console.log("Alt only contains whitespace (ie. spaces, tabs or line breaks)!");
       }
       let uniqueImage = true;
@@ -79,29 +64,20 @@ async function getAllImages(){
   return allImages;
 }
 
-async function sendImages(allImages){ //, tab){
-  // console.log("Result: ", result);
-  // var allImages = result[0];
-  // allImages = allImages['result'];
-  console.log("Images: \n", allImages);
+async function sendImages(allImages){ 
+  console.log("22222222222222222222222222222222222222222222222222222222");
   for(let index=0; index<allImages.length; index++){
     console.log("ImageSrc: ", (allImages[index])['src']);
     let imageCaption = await getImageCaption((allImages[index])['src']);
     (allImages[index])['alt'] = ((allImages[index])['alt']).concat((" Image caption: ").concat(imageCaption));
-    console.log("Image caption before execute script: ", (allImages[index])['alt']);
+    checkDuplicates.set((allImages[index])['src'], (allImages[index])['alt']);
     await addAlternativeText(allImages[index]);
-    // chrome.scripting.executeScript({
-    //     target: { tabId: tab.id },
-    //     function: addAlternativeText,
-    //     args: [allImages[index]]
-    //   });
   }
   console.log("All Images: ", allImages);
 }
 
 async function addAlternativeText(image){
   const selector  = ('img[src="'.concat(image['src'])).concat('"]');
-  console.log("Selector: ", selector);
   var selectedImages = document.querySelectorAll(selector);
   selectedImages.forEach( imageElement => {
     imageElement.setAttribute('alt', image['alt']);

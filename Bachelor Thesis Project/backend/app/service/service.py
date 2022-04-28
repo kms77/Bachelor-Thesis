@@ -35,7 +35,6 @@ def get_images():
         request_data = request.json
         imageURL = request_data['imageURL']
         # allImages = request_data['images']
-        print(imageURL)
         urllib.request.urlretrieve(imageURL, "./utils/image/image.jpg")
         imageCaption = Captioning().get_image_caption()
         os.remove("./utils/image/image.jpg")
@@ -47,7 +46,7 @@ def get_images():
     # print("\n")
     # print(allCaptions)
     # result['data'] = allCaptions
-    print("Image Caption: " + imageCaption)
+    print("Image Caption ----->  " + imageCaption)
     return imageCaption
 
 @app.route("/",methods = ['POST', 'GET'])
