@@ -3,7 +3,7 @@
     "description": "Chrome extension tool for visually impaired people.",
     "version": "1.0",
     "manifest_version": 3,
-    "options_page": "./settings/settings.html",
+    "options_page": "./options/options.html",
     "content_scripts": [
             {
                 "matches": ["http://127.0.0.1:5000/data", "http://127.0.0.1:5000/images"],

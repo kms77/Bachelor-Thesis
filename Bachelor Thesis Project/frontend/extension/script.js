@@ -9,20 +9,24 @@ if(appStatus){
     appStatus.addEventListener('click', changeAppStatus, false);
 }
 
-if(submitButton){
-    submitButton.addEventListener('click', sendRequest, false);
-}
+// if(submitButton){
+//     submitButton.addEventListener('click', //sendRequest, false);
+// }
 
 if(settingsButton){
-  settingsButton.addEventListener('click', goToSettings, false);
+  settingsButton.addEventListener('click', function(){
+    goToOptions("settings-section")
+  }, false);
 }
 
 if(infoButton){
   console.log("Info button clicked!");
-  infoButton.addEventListener('click', goToInfo, false);
+  infoButton.addEventListener('click', function(){
+    goToOptions("info-section")
+  }, false);
 }
 
-//window.onload = getPageData();
+window.onload = getApplicationMode();
 
 async function getPageData(){
   let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -32,6 +36,25 @@ async function getPageData(){
   });
 }
 
+async function getApplicationMode(){
+  var applicationMode = await chrome.storage.sync.get(null);
+  if(applicationMode){
+    let imageDescriptionMode = applicationMode['image-description-mode'];
+    let linkedInFeedMode = applicationMode['linkedIn-feed-mode'];
+    if((imageDescriptionMode && !linkedInFeedMode) || (!imageDescriptionMode && linkedInFeedMode)){
+      if(imageDescriptionMode){
+        getPageData();
+      }
+      else{
+        sendRequest();
+      }
+    }
+    else{
+      console.log("Error: incorrect application mode configuration!");
+    }
+  }
+  console.log("appMode: ", applicationMode);
+}
 
 function changeAppStatus(){
     if($(appStatus).hasClass('inactive')){
@@ -60,19 +83,18 @@ async function sendRequest(){
          data: dataObject,
          crossDomain: true
        }).then(function(response) {
-           let errorMessage = "";
-           response=String(response.data);
-           if(response.indexOf(errorMessage) !== -1){
-                alert(response);
-           }
-           else{
-                if(response !== ""){
-                    $('textarea#textarea-block__id').val(response);
-                }
-                else{
-                    alert("Error trying to make the action!");
-                }
-           }
+          ///let errorMessage = "";
+          response=String(response.data);
+          //  if(response.indexOf(errorMessage) !== -1){
+          //       alert(response);
+          //  }
+          //  else{
+          if(response !== ""){
+              $('textarea#textarea-block__id').val(response);
+          }
+          else{
+              alert("Error trying to make the action!");
+          }
        })
        .catch(function(error){
          alert("Error trying to make the action: " + error + "!");
@@ -84,21 +106,9 @@ async function sendRequest(){
     }
 }
 
-function goToSettings(){
+function goToOptions(option){
   var extensionID = chrome.runtime.id;
-  var pageURL = ("chrome-extension://").concat(extensionID, "/settings/settings.html");
-  try{
-    window.open(pageURL, '_blank').focus();
-  }
-  catch(error){
-    console.log("Error: " + error);
-  }
-}
-
-function goToInfo(){
-  console.log("In goToInfo function");
-  var extensionID = chrome.runtime.id;
-  var pageURL = ("chrome-extension://").concat(extensionID, "/settings/settings.html");
+  var pageURL = "chrome-extension://" + extensionID + "/options/options.html" + "?option=" + option;
   try{
     window.open(pageURL, '_blank').focus();
   }

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="options.css">
+    <link rel="stylesheet" href="../node_modules/bootstrap-icons/font/bootstrap-icons.css">
+    <script src="../node_modules/jquery/dist/jquery.min.js"></script>
+    <title>HMA - Settings</title>
+</head>
+<body>
+    <div id="page-wrapper">
+        <div id="sidebar-container">
+            <div id="sidebar-head-block">
+                <div id="sidebar-block__logo">
+                    <div id="logo-container">
+                        <div id="logo-block">
+                            <h1 class="logo-block__element"><img src="../logo/app_logo.png" alt="Hear Me Assistant Logo" width="35" height="25">&nbsp;H&nbsp;M&nbsp;A&nbsp;</h1>
+                            <h2 class="logo-block__element">Hear Me Assistant</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="sidebar-body-block">
+                <div id="sidebar-block__menu">
+                    <ul>
+                        <li class="list-element">
+                            <a href="#" class="link-section list-element--active" data-target="info-section">
+                                <span class="list-element__icon bi bi-info-square"></span>
+                                <span class="list-element__text">Info</span>
+                            </a>
+                        </li>
+                        <li class="list-element">
+                            <a href="#" class="link-section list-element--active" data-target="settings-section">
+                                <span class="list-element__icon bi bi-gear"></span>
+                                <span class="list-element__text">Settings</span>
+                            </a>
+                        </li>
+                        <li class="list-element">
+                            <a href="#" class="list-element--active" id="close-button-id">
+                                <span class="list-element__icon bi bi-arrow-left-square"></span>
+                                <span class="list-element__text">Exit</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div id="selected-option-container">
+            <div id="info-hear-me-assistant" class="info-section">
+                <h1 class="title-section">About Hear Me Assistant</h1>
+                <div id="section-container" class="info-section">
+                    <div class="info-section__question info-section">
+                        <h2 class="header-element">What is Hear Me Assistant?</h2>
+                        <p>Hear Me Assistant (HMA) is a Google Chrome extension that aids visually impaired people in website accessibility by getting an image description
+                            in case one is missing and accessing LinkedIn feed posts.
+                        </p>
+                    </div>
+                    <div class="info-section__question info-section">
+                        <h2 class="header-element">What functionalities does the application have?</h2>
+                        <p>Hear Me Assistant can do the following:</p>
+                        <table>
+                            <tr>
+                                <th>Image Description</th>
+                                <th>LinkedIn Feed</th>
+                            </tr>
+                            <tr>
+                                <td><i class="bi bi-check-circle"></i> Generate a caption for an image</td>
+                                <td><i class="bi bi-check-circle"></i> Auto-login to the platform</td>
+                            </tr>
+                            <tr>
+                                <td><i class="bi bi-check-circle"></i> Add the generated description for each image on the website</td>
+                                <td><i class="bi bi-check-circle"></i> Provide a post description which includes the author, the post text and the image caption for feed posts</td>                           
+                            </tr>
+                            <tr>
+                                <td><i class="bi bi-check-circle"></i> The screen reader can now also describe images by using the caption generated</td>
+                                <td><i class="bi bi-check-circle"></i> The user is able to listen to each post description</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div id="settings-hear-me-assistant" class="settings-section">
+                <h1 class="title-section">General Options</h1>
+                <div class="settings-section__element settings-section">
+                    <h2 class="header-element"><input type="checkbox" id="image-description-mode" name="ImageDescriptionMode" value="ImageDescriptionMode">Image Description Mode</h2>
+                    <p>The mode which provides a caption for each image of the active website page such that the screen reader of the user is able the describe the image.</p>
+                </div>
+                <div class="settings-section__element settings-section">
+                    <h2 class="header-element"><input type="checkbox" id="linkedIn-feed-mode" name="LinkedInFeedMode" value="LinkedInFeedMode">LinkedIn Feed Mode</h2>
+                    <p>This mode permits the user to automatically login to the LinkedIn platform and get audio description of each feed post. The description includes a short caption of the image of the post(if it exists), the description text and the author of the post.</p>
+                </div>
+                <div class="settings-section__element settings-section">
+                    <h2 class="header-element"><input type="checkbox" id="linkedIn-credentials" name="LinkedInCredentials" value="LinkedInCredentials">LinkedIn Credentials</h2>
+                    <p>Here the user can enter their LinkedIn Credentials in order to auto-login to the platform.</p>
+                    <div id="form-container" class="settings-section">
+                        <div id="form-block" class="form-container__element settings-section">
+                            <form id="form-block__element" name="send-image-form">
+                                <div class="form-block__data settings-section">
+                                    <div class="form-block__element settings-section">
+                                        <label id="form-block__label" for="username-input"><b>Username: </b></label>
+                                        <input id="form_block__username_input" class="form-block__input" name="username-input" type="username">
+                                    </div>
+                                    <div class="form-block__element settings-section">
+                                        <label id="form-block__label" for="password-input"><b>Password: </b></label>
+                                        <input id="form_block__password_input" class="form-block__input" name="password-input" type="password">
+                                        <button id="form-block__save" type="button">Save</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="options.js"></script>
+</body>
+</html>
