@@ -7,27 +7,28 @@ from flask import send_from_directory
 from scraping.scraping import Scraping
 from captioning.captioning import Captioning
 import urllib
+import asyncio
 
 
 app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
-@app.route("/data",methods = ['POST', 'GET'])
-@cross_origin()
-def get_data():
-    result= ""
-    if request.method == 'POST':
-        request_data = request.json
-        usernameCredentials = request_data['username']
-        passwordCredentials = request_data['password']
-        result = Scraping().scraping_data(usernameCredentials, passwordCredentials)
-        print("Result: ", result)
-    return result
+# @app.route("/data",methods = ['POST', 'GET'])
+# @cross_origin()
+# def get_data():
+#     result= ""
+#     if request.method == 'POST':
+#         request_data = request.json
+#         usernameCredentials = request_data['username']
+#         passwordCredentials = request_data['password']
+#         result = Scraping().scraping_data(usernameCredentials, passwordCredentials)
+#         print("Result: ", result)
+#     return result
 
 @app.route("/images",methods = ['POST', 'GET'])
 @cross_origin()
-def get_images():
+async def get_images():
     # result = {}
     # allCaptions = []
     imageCaption = ""
@@ -36,7 +37,7 @@ def get_images():
         imageURL = request_data['imageURL']
         # allImages = request_data['images']
         urllib.request.urlretrieve(imageURL, "./utils/image/image.jpg")
-        imageCaption = Captioning().get_image_caption()
+        imageCaption = await Captioning().get_image_caption()
         os.remove("./utils/image/image.jpg")
     #     for src in allImages:
     #         urllib.request.urlretrieve(src, "./utils/image/image.jpg")

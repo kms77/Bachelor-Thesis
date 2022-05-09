@@ -34,15 +34,15 @@ class Scraping:
         profileIntros = [
             'The author of the post is: ',
             'The post was written by: ',
-            'Profile name: ',
-            ' wrote: ',
-            ' posted the following: ',
-            ' said: '
+            'Profile name: '
         ]
         descriptionIntros = [
             'Post description: ',
             'Description: ',
-            'The description of the post: '
+            'The description of the post: ',
+            'The author of the post said: ',
+            'The author wrote the following: ',
+            'The author posted the following: '
         ]
         imageIntros = [
             'In the picture we have: ',

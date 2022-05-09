@@ -36,7 +36,16 @@ async function getPageData(){
   });
 }
 
+async function checkIfSocialMedia(){
+  let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  await chrome.scripting.executeScript({
+    target: { tabId: tab.id },
+    files: ["./node_modules/jquery/dist/jquery.min.js", "./node_modules/axios/dist/axios.min.js", "socialMedia.js"]
+  });
+}
+
 async function getApplicationMode(){
+  console.log("Yess");
   var applicationMode = await chrome.storage.sync.get(null);
   if(applicationMode){
     let imageDescriptionMode = applicationMode['image-description-mode'];
@@ -46,7 +55,8 @@ async function getApplicationMode(){
         getPageData();
       }
       else{
-        sendRequest();
+        checkIfSocialMedia();
+       // sendRequest();
       }
     }
     else{
@@ -67,44 +77,44 @@ function changeAppStatus(){
     }
 }
 
-async function sendRequest(){
-    // get(null) - to get all values
-    var currentCredentials = await chrome.storage.sync.get(null);
-    console.log("Credentials: ", currentCredentials);
-    if(currentCredentials){ 
-       var dataObject = { 
-              username: currentCredentials['username'],
-              password: currentCredentials['password']
-          };
-       axios({
-         method: 'POST',
-        //  url: 'https://hear-me-assistant.herokuapp.com/data',
-         url: 'http://127.0.0.1:5000/data',
-         data: dataObject,
-         crossDomain: true
-       }).then(function(response) {
-          ///let errorMessage = "";
-          response=String(response.data);
-          //  if(response.indexOf(errorMessage) !== -1){
-          //       alert(response);
-          //  }
-          //  else{
-          if(response !== ""){
-              $('textarea#textarea-block__id').val(response);
-          }
-          else{
-              alert("Error trying to make the action!");
-          }
-       })
-       .catch(function(error){
-         alert("Error trying to make the action: " + error + "!");
-       });
-     }
-     else{
-       alert("Error: input value is null!");
+// async function sendRequest(){
+//     // get(null) - to get all values
+//     var currentCredentials = await chrome.storage.sync.get(null);
+//     console.log("Credentials: ", currentCredentials);
+//     if(currentCredentials){ 
+//        var dataObject = { 
+//               username: currentCredentials['username'],
+//               password: currentCredentials['password']
+//           };
+//        axios({
+//          method: 'POST',
+//         //  url: 'https://hear-me-assistant.herokuapp.com/data',
+//          url: 'http://127.0.0.1:5000/data',
+//          data: dataObject,
+//          crossDomain: true
+//        }).then(function(response) {
+//           ///let errorMessage = "";
+//           response=String(response.data);
+//           //  if(response.indexOf(errorMessage) !== -1){
+//           //       alert(response);
+//           //  }
+//           //  else{
+//           if(response !== ""){
+//               $('textarea#textarea-block__id').val(response);
+//           }
+//           else{
+//               alert("Error trying to make the action!");
+//           }
+//        })
+//        .catch(function(error){
+//          alert("Error trying to make the action: " + error + "!");
+//        });
+//      }
+//      else{
+//        alert("Error: input value is null!");
    
-    }
-}
+//     }
+// }
 
 function goToOptions(option){
   var extensionID = chrome.runtime.id;

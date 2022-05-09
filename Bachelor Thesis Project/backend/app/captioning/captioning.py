@@ -9,6 +9,7 @@ import skimage.io as io
 import PIL.Image
 from IPython.display import Image
 from model.model import ClipCaptionModel
+import asyncio
 
 T = torch.Tensor
 
@@ -127,7 +128,7 @@ class Captioning:
                 generated_list.append(output_text)
         return generated_list[0]
 
-    def get_image_caption(self):
+    async def get_image_caption(self):
         clip_model, preprocess = clip.load("ViT-B/32", jit=False)
         tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
         prefix_length = 10
