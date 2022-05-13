@@ -9,9 +9,6 @@ if(appStatus){
     appStatus.addEventListener('click', changeAppStatus, false);
 }
 
-// if(submitButton){
-//     submitButton.addEventListener('click', //sendRequest, false);
-// }
 
 if(settingsButton){
   settingsButton.addEventListener('click', function(){

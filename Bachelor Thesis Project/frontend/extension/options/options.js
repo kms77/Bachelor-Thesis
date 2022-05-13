@@ -1,6 +1,5 @@
 window.onload =getSelectedOption();
-
-var saveCredentialsButton = document.getElementById("form-block__save");
+// var saveCredentialsButton = document.getElementById("form-block__save");
 var closeButtonID = document.getElementById("close-button-id");
 var imageDescriptionMode = document.getElementById("image-description-mode");
 var linkedinMode = document.getElementById("linkedIn-feed-mode");
@@ -29,10 +28,10 @@ if(closeButtonID){
     closeButtonID.addEventListener('click', closePage, false);
 }
 
-if(saveCredentialsButton){
-    console.log("Button clicked: ");
-    saveCredentialsButton.addEventListener('click', saveCredentials, false);
-}
+// if(saveCredentialsButton){
+//     console.log("Button clicked: ");
+//     saveCredentialsButton.addEventListener('click', saveCredentials, false);
+// }
 
 async function changeApplicationMode(changedTextBox, toChangeTextBox){
     var currentStatus = document.getElementById(changedTextBox).checked;
@@ -65,27 +64,27 @@ function getSelectedOption(){
     showSelectedOption(target);
 }
 
-async function saveCredentials(){
-    console.log("In save credentials");
-    var usernameCredentials = document.getElementById("form_block__username_input").value;
-    var passwordCredentials = document.getElementById("form_block__password_input").value;
-    if(usernameCredentials === "" || passwordCredentials === ""){
-        console.log("Invalid credentials!");
-    }
-    else{
-        var credentials = {};
-        credentials['username'] = usernameCredentials;
-        credentials['password'] = passwordCredentials;
-        console.log("Credentials from input: ", credentials);
-        await chrome.storage.sync.set( credentials, function (data){
-            console.log("Yess");
-            if(chrome.runtime.lastError){
-                console.error("Error: ", chrome.lastError.message);
-            }
-            console.log("Data: ", data);
-        });
-    }
-}
+// async function saveCredentials(){
+//     console.log("In save credentials");
+//     var usernameCredentials = document.getElementById("form_block__username_input").value;
+//     var passwordCredentials = document.getElementById("form_block__password_input").value;
+//     if(usernameCredentials === "" || passwordCredentials === ""){
+//         console.log("Invalid credentials!");
+//     }
+//     else{
+//         var credentials = {};
+//         credentials['username'] = usernameCredentials;
+//         credentials['password'] = passwordCredentials;
+//         console.log("Credentials from input: ", credentials);
+//         await chrome.storage.sync.set( credentials, function (data){
+//             console.log("Yess");
+//             if(chrome.runtime.lastError){
+//                 console.error("Error: ", chrome.lastError.message);
+//             }
+//             console.log("Data: ", data);
+//         });
+//     }
+// }
 
 async function setApplicationMode(changedTextBox, toChangeTextBox){
     var applicationModes = {};

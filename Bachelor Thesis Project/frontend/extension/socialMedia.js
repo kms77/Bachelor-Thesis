@@ -1,6 +1,8 @@
 var lastKnownScrollPosition = 0;
 const MIN_VALUE = 0;
 var checkDuplicatesPosts = new Map();
+var currentSocialMedia = null;
+var countDonePosts = 0;
 var dictionaryOfIntros = {
     "author": ['The author of the post is: ', 'The post was written by: ', 'Profile name: '],
     "description": ['Post description: ', 'Description: ', 'The description of the post: ', 'The author of the post said: ', 'The author wrote the following: ', 'The author posted the following: '],
@@ -18,16 +20,16 @@ var arraySocialMedia = [
     }
 ]
 
-document.addEventListener('scroll', async function (){
+document.addEventListener('scroll', function (){
   let currentScrollPosition = window.scrollY;
   if(currentScrollPosition>= lastKnownScrollPosition + 2000)
   {
     lastKnownScrollPosition = currentScrollPosition;
-    await analyzePageData();
+    analyzePageData(currentSocialMedia);
   }
-}, true);
+});
 
-$(document).ready(async function() {
+$(document).ready(function() {
     let isValid = false;
     let index = 0;
     for(index= 0; index < arraySocialMedia.length; index++){
@@ -38,61 +40,80 @@ $(document).ready(async function() {
     }
     if(isValid){
         console.log("Index: ", index);
-        await analyzePageData(index);
+        currentSocialMedia = index;
+        analyzePageData(index);
     }
   });
 
-async function analyzePageData(index){
-    var allPosts = document.querySelectorAll(arraySocialMedia[index]['post']);
-    allPosts.forEach( async postElement => {
-        let key = ((postElement.querySelector(arraySocialMedia[index]['key'])).textContent).replace(/(\r\n|\r|\n)/g, '').trim();
-        console.log(key);
-        if(checkDuplicatesPosts.has(key)){
-            console.log("Already added ro dictionary!")
-        }
-        else{
-            var value = await getPostDescription(postElement, index);
-            if(value === null){
-                console.log("Invalid element!");
-                return;
+function sendMessagePromise(message) {
+    return new Promise((resolve, reject) => {
+        chrome.runtime.sendMessage({message}, response => {
+            if(response.complete) {
+                resolve("Done");
+            } else {
+                reject('Something wrong');
             }
-            else{
-                checkDuplicatesPosts.set(key, value);
-                console.log("Added to dictionary!");
-            }
-        }
+        });
     });
-    console.log("All posts: ", allPosts);
-    console.log("Checkduplicates: ", checkDuplicatesPosts);
 }
 
-async function getPostDescription(postElement, index){
-    let intro = '';
-    let postDesciption = '';
-    let auxiliarValue = '';
-    auxiliarValue = postElement.querySelector(arraySocialMedia[index]['autor']);
-    if(auxiliarValue !== null){ 
-        let author = ((auxiliarValue).textContent).replace(/(\r\n|\r|\n)/g, '').trim();
-        intro = getIntroOfElement("author");
-        postDesciption = postDesciption + intro + author + ". ";
-    }
-    else{
-        return null;
-    }
-    auxiliarValue = postElement.querySelector(arraySocialMedia[index]['description']);
-    if(auxiliarValue !== null){
-        let description = (((auxiliarValue).textContent).replace(/(\r\n|\r|\n)/g, '')).trim();
-        intro = getIntroOfElement("description");
-        postDesciption = postDesciption + intro + description + ". ";
-    }
-    auxiliarValue = postElement.querySelector(arraySocialMedia[index]['image']);
-    if(auxiliarValue !=null){
-        let imageSrc = auxiliarValue.getAttribute('src');
-        let imageCaption =  await getImageCaption(imageSrc);
-        intro = await getIntroOfElement("image");
-        postDesciption = postDesciption + intro + imageCaption + ". ";
-    }
-    return postDesciption;
+async function analyzePageData(index){
+    var allPosts = document.querySelectorAll(arraySocialMedia[index]["post"]);
+    console.log("BEFORE allPosts length: ", allPosts.length);
+    console.log(allPosts);
+    let auxiliarLength = countDonePosts;
+    countDonePosts = allPosts.length;
+    allPosts = Array.from(allPosts);
+    allPosts.splice(MIN_VALUE, auxiliarLength);
+    console.log("AFTER allPosts length: ", allPosts.length);
+    console.log(allPosts);
+    for(let postElement of allPosts){
+        const textMessage = await getPostDescription(postElement, index);
+        if(textMessage === null){
+            console.log("Invalid element!");
+            return;
+        }
+        else{
+            console.log(textMessage);
+            console.log("**********************************************************************************");
+            const  messageOut = await sendMessagePromise(textMessage);
+            // chrome.runtime.sendMessage({message: textMessage}, function(response) {
+            //      console.log("Status: ", response);
+            //   });
+            console.log("*************--->>", messageOut);
+        }
+    } 
+}
+
+function getPostDescription(postElement, index){
+    return new Promise(function(resolve){
+        let intro = '';
+        var postDescription = '';
+        let auxiliarValue = '';
+        auxiliarValue = postElement.querySelector(arraySocialMedia[index]["author"]);
+        if(auxiliarValue !== null){ 
+            let author = ((auxiliarValue).textContent).replace(/(\r\n|\r|\n)/g, '').trim();
+            intro = getIntroOfElement("author");
+            postDescription = postDescription + intro + author + ". ";
+        }
+        else{
+            resolve(null);
+        }
+        auxiliarValue = postElement.querySelector(arraySocialMedia[index]["description"]);
+        if(auxiliarValue !== null){
+            let description = (((auxiliarValue).textContent).replace(/(\r\n|\r|\n)/g, '')).trim();
+            intro = getIntroOfElement("description");
+            postDescription = postDescription + intro + description + ". ";
+        }
+        auxiliarValue = postElement.querySelector(arraySocialMedia[index]["image"]);
+        if(auxiliarValue !=null){
+            let imageSrc = auxiliarValue.getAttribute('src');
+            let imageCaption = "Image"; //await getImageCaption(imageSrc);
+            intro = getIntroOfElement("image");
+            postDescription = postDescription + intro + imageCaption + ". ";
+        }
+        resolve(postDescription);
+    });
 }
 
 function getRandomdInteger(min, max) {
@@ -126,3 +147,57 @@ async function getImageCaption(imageSrc){
     });
     return imageCaption;
   }
+
+  // async function analyzePageData(index){
+//     var allPosts = document.querySelectorAll(arraySocialMedia[index]["post"]);
+//     allPosts.forEach( async postElement => {
+//         let key = ((postElement.querySelector(arraySocialMedia[index]["key"])).textContent).replace(/(\r\n|\r|\n)/g, '').trim();
+//         console.log(key);
+//         if(checkDuplicatesPosts.has(key)){
+//             console.log("Already added ro dictionary!")
+//         }
+//         else{
+//             var value = await getPostDescription(postElement, index);
+//             if(value === null){
+//                 console.log("Invalid element!");
+//                 return;
+//             }
+//             else{
+//                 chrome.runtime.sendMessage({message: value});
+//                 checkDuplicatesPosts.set(key, value);
+//                 console.log("Added to dictionary!");
+//             }
+//         }
+//     });
+//     console.log("All posts: ", allPosts);
+//     console.log("Checkduplicates: ", checkDuplicatesPosts);
+// }
+
+// async function getPostDescription(postElement, index){
+//     let intro = '';
+//     let postDesciption = '';
+//     let auxiliarValue = '';
+//     auxiliarValue = postElement.querySelector(arraySocialMedia[index]["author"]);
+//     if(auxiliarValue !== null){ 
+//         let author = ((auxiliarValue).textContent).replace(/(\r\n|\r|\n)/g, '').trim();
+//         intro = getIntroOfElement("author");
+//         postDesciption = postDesciption + intro + author + ". ";
+//     }
+//     else{
+//         return null;
+//     }
+//     auxiliarValue = postElement.querySelector(arraySocialMedia[index]["description"]);
+//     if(auxiliarValue !== null){
+//         let description = (((auxiliarValue).textContent).replace(/(\r\n|\r|\n)/g, '')).trim();
+//         intro = getIntroOfElement("description");
+//         postDesciption = postDesciption + intro + description + ". ";
+//     }
+//     auxiliarValue = postElement.querySelector(arraySocialMedia[index]["image"]);
+//     if(auxiliarValue !=null){
+//         let imageSrc = auxiliarValue.getAttribute('src');
+//         let imageCaption =  await getImageCaption(imageSrc);
+//         intro = getIntroOfElement("image");
+//         postDesciption = postDesciption + intro + imageCaption + ". ";
+//     }
+//     return postDesciption;
+// }

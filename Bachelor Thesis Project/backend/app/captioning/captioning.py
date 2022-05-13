@@ -128,7 +128,7 @@ class Captioning:
                 generated_list.append(output_text)
         return generated_list[0]
 
-    async def get_image_caption(self):
+    def get_image_caption(self):
         clip_model, preprocess = clip.load("ViT-B/32", jit=False)
         tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
         prefix_length = 10

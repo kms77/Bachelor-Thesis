@@ -10,7 +10,6 @@ async function onEntry(){
 }
 
 async function onScroll() {
-  // console.log("33333333333333333333333333333333333333333333333333333333333");
   document.addEventListener('scroll', onScroll, true);
   let currentScrollPosition = window.scrollY;
   if(currentScrollPosition>= lastKnownScrollPosition + 2000)
@@ -21,7 +20,6 @@ async function onScroll() {
 }
 
 async function getAllImages(){
-  // console.log("111111111111111111111111111111111111111111111111111111111");
   var imageCollection = document.getElementsByTagName("img");
   var images = Array.prototype.slice.call(imageCollection);
   var allImages = [];
@@ -64,8 +62,7 @@ async function getAllImages(){
   return allImages;
 }
 
-async function sendImages(allImages){ j
-  // console.log("22222222222222222222222222222222222222222222222222222222");
+async function sendImages(allImages){ 
   for(let index=0; index<allImages.length; index++){
     console.log("ImageSrc: ", (allImages[index])['src']);
     let imageCaption = await getImageCaption((allImages[index])['src']);

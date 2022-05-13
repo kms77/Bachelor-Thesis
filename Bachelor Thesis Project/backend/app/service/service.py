@@ -28,7 +28,7 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 
 @app.route("/images",methods = ['POST', 'GET'])
 @cross_origin()
-async def get_images():
+def get_images():
     # result = {}
     # allCaptions = []
     imageCaption = ""
@@ -37,7 +37,7 @@ async def get_images():
         imageURL = request_data['imageURL']
         # allImages = request_data['images']
         urllib.request.urlretrieve(imageURL, "./utils/image/image.jpg")
-        imageCaption = await Captioning().get_image_caption()
+        imageCaption = Captioning().get_image_caption()
         os.remove("./utils/image/image.jpg")
     #     for src in allImages:
     #         urllib.request.urlretrieve(src, "./utils/image/image.jpg")
