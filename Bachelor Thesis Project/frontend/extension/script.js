@@ -53,7 +53,9 @@ async function checkIfSocialMedia(){
 async function getApplicationMode(){
   console.log("Yess");
   var applicationMode = await chrome.storage.sync.get(null);
+  await chrome.storage.sync.remove("extension_status");
   if(applicationMode){
+    console.log("AppStatus: ", applicationMode[EXTENSION_STATUS]);
     if(applicationMode[EXTENSION_STATUS]){
       $(appStatus).removeClass(INACTIVE_EXTENSION);
       let imageDescriptionMode = applicationMode[IMAGE_DESCRIPTION_MODE];

@@ -9,9 +9,9 @@ chrome.runtime.onInstalled.addListener(async function(details){
     if(details.reason == "install"){
         //call a function to handle a first install
         let applicationMode = {
+            "extension-status": false,
             "image-description-mode": false,
-            "social-media-feed-mode": false,
-            "extension-status": false
+            "social-media-feed-mode": false
         }
         await chrome.storage.sync.set( applicationMode, function (data){
             if(chrome.runtime.lastError){
@@ -50,9 +50,9 @@ chrome.commands.onCommand.addListener(async function(command){
             applicationMode["extension-status"] = false;
             break;
         default:
-          console.log("Invalid key shortcut!")
-      }
-    if(applicationMode.length){
+          console.log("Invalid key shortcut!");
+    }
+    if(Object.keys(applicationMode).length){
         await chrome.storage.sync.set( applicationMode, function (data){
             if(chrome.runtime.lastError){
                 console.error("Error: ", chrome.lastError.message);
