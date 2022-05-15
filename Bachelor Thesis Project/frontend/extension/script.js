@@ -1,8 +1,13 @@
+const IMAGE_DESCRIPTION_MODE= "image-description-mode";
+const SOCIAL_MEDIA_MODE = "social-media-feed-mode";
+const EXTENSION_STATUS = "extension-status";
+const INFO_SECTION_OPTION = "info-section";
+const SETTNIGS_SECTION_OPTION = "settings-section";
+const INACTIVE_EXTENSION = "inactive";
 var appStatus = document.getElementById("on-off-block--toggle");
 var submitButton = document.getElementById("form-block__submit");
 var settingsButton = document.getElementById("menu-block__settings_button");
 var infoButton = document.getElementById("menu-block__info_button");
-
 var lastKnownScrollPosition = 0;
 
 if(appStatus){
@@ -12,14 +17,18 @@ if(appStatus){
 
 if(settingsButton){
   settingsButton.addEventListener('click', function(){
-    goToOptions("settings-section")
+    if(!($(appStatus).hasClass(INACTIVE_EXTENSION))){
+      goToOptions(SETTNIGS_SECTION_OPTION);
+    }
   }, false);
 }
 
 if(infoButton){
   console.log("Info button clicked!");
   infoButton.addEventListener('click', function(){
-    goToOptions("info-section")
+    if(!($(appStatus).hasClass(INACTIVE_EXTENSION))){
+      goToOptions(INFO_SECTION_OPTION);
+    }
   }, false);
 }
 
@@ -45,73 +54,50 @@ async function getApplicationMode(){
   console.log("Yess");
   var applicationMode = await chrome.storage.sync.get(null);
   if(applicationMode){
-    let imageDescriptionMode = applicationMode['image-description-mode'];
-    let linkedInFeedMode = applicationMode['linkedIn-feed-mode'];
-    if((imageDescriptionMode && !linkedInFeedMode) || (!imageDescriptionMode && linkedInFeedMode)){
-      if(imageDescriptionMode){
-        getPageData();
-      }
-      else{
-        checkIfSocialMedia();
-       // sendRequest();
+    if(applicationMode[EXTENSION_STATUS]){
+      $(appStatus).removeClass(INACTIVE_EXTENSION);
+      let imageDescriptionMode = applicationMode[IMAGE_DESCRIPTION_MODE];
+      let linkedInFeedMode = applicationMode[SOCIAL_MEDIA_MODE];
+      if((imageDescriptionMode && !linkedInFeedMode) || (!imageDescriptionMode && linkedInFeedMode)){
+        if(imageDescriptionMode){
+          getPageData();
+        }
+        else{
+          checkIfSocialMedia();
+        // sendRequest();
+        }
       }
     }
     else{
-      console.log("Error: incorrect application mode configuration!");
+      $(appStatus).addClass(INACTIVE_EXTENSION);
+      console.log("Extension is turned-off!");
     }
+  }
+  else{
+    console.log("Error: incorrect application mode configuration!");
   }
   console.log("appMode: ", applicationMode);
 }
 
-function changeAppStatus(){
-    if($(appStatus).hasClass('inactive')){
-        $('#body-container').css("visibility", "visible");
-        $(appStatus).removeClass('inactive');
+async function changeAppStatus(){
+  var applicationMode = await chrome.storage.sync.get(null);
+  if($(appStatus).hasClass(INACTIVE_EXTENSION)){
+      //$('#body-container').css("visibility", "visible");
+      $(appStatus).removeClass(INACTIVE_EXTENSION);
+      applicationMode[EXTENSION_STATUS] = true;
+  }
+  else{
+      //$('#body-container').css("visibility", "hidden");
+      $(appStatus).addClass(INACTIVE_EXTENSION);
+      applicationMode[EXTENSION_STATUS] = false;
+  }
+  await chrome.storage.sync.set( applicationMode, function (data){
+    if(chrome.runtime.lastError){
+        console.error("Error: ", chrome.lastError.message);
     }
-    else{
-        $('#body-container').css("visibility", "hidden");
-        $(appStatus).addClass('inactive');
-    }
+    console.log("Data: ", data);
+  });
 }
-
-// async function sendRequest(){
-//     // get(null) - to get all values
-//     var currentCredentials = await chrome.storage.sync.get(null);
-//     console.log("Credentials: ", currentCredentials);
-//     if(currentCredentials){ 
-//        var dataObject = { 
-//               username: currentCredentials['username'],
-//               password: currentCredentials['password']
-//           };
-//        axios({
-//          method: 'POST',
-//         //  url: 'https://hear-me-assistant.herokuapp.com/data',
-//          url: 'http://127.0.0.1:5000/data',
-//          data: dataObject,
-//          crossDomain: true
-//        }).then(function(response) {
-//           ///let errorMessage = "";
-//           response=String(response.data);
-//           //  if(response.indexOf(errorMessage) !== -1){
-//           //       alert(response);
-//           //  }
-//           //  else{
-//           if(response !== ""){
-//               $('textarea#textarea-block__id').val(response);
-//           }
-//           else{
-//               alert("Error trying to make the action!");
-//           }
-//        })
-//        .catch(function(error){
-//          alert("Error trying to make the action: " + error + "!");
-//        });
-//      }
-//      else{
-//        alert("Error: input value is null!");
-   
-//     }
-// }
 
 function goToOptions(option){
   var extensionID = chrome.runtime.id;

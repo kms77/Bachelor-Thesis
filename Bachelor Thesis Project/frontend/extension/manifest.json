@@ -13,6 +13,22 @@
                 "js":["./node_modules/jquery/dist/jquery.min.js","./node_modules/axios/dist/axios.min.js"]
             }
     ],
+    "commands": {
+        "turn-on-extension": {
+          "suggested_key": {
+                "default": "Ctrl+Shift+Up",
+                "mac": "Command+Shift+Up"
+            },
+          "description": "Key shortcut to turn on the extension."
+        },
+        "turn-off-extension": {
+            "suggested_key": {
+                "default": "Ctrl+Shift+Down",
+                "mac": "Command+Shift+Down"
+            },
+            "description": "Key shortcut to turn off the extension."
+        }
+    },
     "action": {
         "default_popup": "source.html",
         "default_icon": {
