@@ -27,6 +27,34 @@
                 "mac": "Command+Shift+Down"
             },
             "description": "Key shortcut to turn off the extension."
+        },
+        "stop-text-to-speech": {
+            "suggested_key": {
+                "default": "Ctrl+Shift",
+                "mac": "Command+Shift"
+            },
+            "description": "Key shortcut to stop the text to speech mode of the extension."
+        },
+        "pause-text-to-speech": {
+            "suggested_key": {
+                "default": "Ctrl+Shift+Left",
+                "mac": "Command+Shift+Left"
+            },
+            "description": "Key shortcut to pause the text to speech mode of the extension."
+        },
+        "resume-text-to-speech": {
+            "suggested_key": {
+                "default": "Ctrl+Shift+Right",
+                "mac": "Command+Shift+Right"
+            },
+            "description": "Key shortcut to resume the text to speech mode of the extension if it was paused."
+        },
+        "extension-shortcuts-guide": {
+            "suggested_key": {
+                "default": "Ctrl+Shift+Space",
+                "mac": "Command+Shift+Space"
+            },
+            "description": "Key shortcut to open the guide for all shortcuts of the extension."
         }
     },
     "action": {
