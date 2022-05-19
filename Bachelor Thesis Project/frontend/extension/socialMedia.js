@@ -20,13 +20,17 @@ var arraySocialMedia = [
     }
 ]
 
-document.addEventListener('scroll', function (){
-  let currentScrollPosition = window.scrollY;
-  if(currentScrollPosition>= lastKnownScrollPosition + 2000)
-  {
-    lastKnownScrollPosition = currentScrollPosition;
-    analyzePageData(currentSocialMedia);
-  }
+document.addEventListener('scroll', async function (){
+    const EXTENSION_STATUS = "extension-status";
+    let appliationSettings = await getApplicationSettings();
+    if(appliationSettings[EXTENSION_STATUS] === true){
+        let currentScrollPosition = window.scrollY;
+        if(currentScrollPosition>= lastKnownScrollPosition + 2000)
+        {
+            lastKnownScrollPosition = currentScrollPosition;
+            analyzePageData(currentSocialMedia);
+        }
+    }
 });
 
 $(document).ready(function() {
@@ -44,6 +48,11 @@ $(document).ready(function() {
         analyzePageData(index);
     }
   });
+
+async function getApplicationSettings(){
+    let applicationSettings = await chrome.storage.sync.get(null);
+    return applicationSettings;
+  }
 
 function sendMessagePromise(message) {
     return new Promise((resolve, reject) => {

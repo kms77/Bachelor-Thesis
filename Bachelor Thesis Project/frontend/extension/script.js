@@ -34,6 +34,21 @@ if(infoButton){
 
 window.onload = getApplicationMode();
 
+async function setApplicationSettings(applicationSettings){
+  applicationSettings["text-to-speech-status"] = true;
+  await chrome.storage.sync.set( applicationSettings, function (data){
+      if(chrome.runtime.lastError){
+          console.error("Error: ", chrome.lastError.message);
+      }
+      console.log("Data: ", data);
+  });
+}
+
+async function getApplicationSettings(){
+  let applicationSettings = await chrome.storage.sync.get(null);
+  return applicationSettings;
+}
+
 async function getPageData(){
   let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   await chrome.scripting.executeScript({
@@ -50,16 +65,27 @@ async function checkIfSocialMedia(){
   });
 }
 
+function turnOnTheExtension(){
+  $(appStatus).removeClass(INACTIVE_EXTENSION);
+  $(infoButton).removeClass(INACTIVE_EXTENSION);
+  $(settingsButton).removeClass(INACTIVE_EXTENSION);
+}
+
+function turnOffTheExtension(){
+  $(appStatus).addClass(INACTIVE_EXTENSION);
+  $(infoButton).addClass(INACTIVE_EXTENSION);
+  $(settingsButton).addClass(INACTIVE_EXTENSION);
+}
+
 async function getApplicationMode(){
   console.log("Yess");
-  var applicationMode = await chrome.storage.sync.get(null);
-  await chrome.storage.sync.remove("extension_status");
-  if(applicationMode){
-    console.log("AppStatus: ", applicationMode[EXTENSION_STATUS]);
-    if(applicationMode[EXTENSION_STATUS]){
-      $(appStatus).removeClass(INACTIVE_EXTENSION);
-      let imageDescriptionMode = applicationMode[IMAGE_DESCRIPTION_MODE];
-      let linkedInFeedMode = applicationMode[SOCIAL_MEDIA_MODE];
+  let applicationSettings = await getApplicationSettings();
+  if(applicationSettings){
+    console.log("AppStatus: ", applicationSettings[EXTENSION_STATUS]);
+    if(applicationSettings[EXTENSION_STATUS]){
+      turnOnTheExtension();
+      let imageDescriptionMode = applicationSettings[IMAGE_DESCRIPTION_MODE];
+      let linkedInFeedMode = applicationSettings[SOCIAL_MEDIA_MODE];
       if((imageDescriptionMode && !linkedInFeedMode) || (!imageDescriptionMode && linkedInFeedMode)){
         if(imageDescriptionMode){
           getPageData();
@@ -71,34 +97,27 @@ async function getApplicationMode(){
       }
     }
     else{
-      $(appStatus).addClass(INACTIVE_EXTENSION);
+      turnOffTheExtension();
       console.log("Extension is turned-off!");
     }
   }
   else{
     console.log("Error: incorrect application mode configuration!");
   }
-  console.log("appMode: ", applicationMode);
+  console.log("appMode: ", applicationSettings);
 }
 
 async function changeAppStatus(){
-  var applicationMode = await chrome.storage.sync.get(null);
+  var applicationSettings = await getApplicationSettings();
   if($(appStatus).hasClass(INACTIVE_EXTENSION)){
-      //$('#body-container').css("visibility", "visible");
-      $(appStatus).removeClass(INACTIVE_EXTENSION);
-      applicationMode[EXTENSION_STATUS] = true;
+    turnOnTheExtension();
+    applicationSettings[EXTENSION_STATUS] = true;
   }
   else{
-      //$('#body-container').css("visibility", "hidden");
-      $(appStatus).addClass(INACTIVE_EXTENSION);
-      applicationMode[EXTENSION_STATUS] = false;
+    turnOffTheExtension();
+    applicationSettings[EXTENSION_STATUS] = false;
   }
-  await chrome.storage.sync.set( applicationMode, function (data){
-    if(chrome.runtime.lastError){
-        console.error("Error: ", chrome.lastError.message);
-    }
-    console.log("Data: ", data);
-  });
+  setApplicationSettings(applicationSettings);
 }
 
 function goToOptions(option){

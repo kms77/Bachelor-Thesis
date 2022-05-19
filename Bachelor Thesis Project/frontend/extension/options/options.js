@@ -25,6 +25,11 @@ if(closeButtonID){
     closeButtonID.addEventListener('click', closePage, false);
 }
 
+async function getApplicationSettings(){
+    let applicationSettings = await chrome.storage.sync.get(null);
+    return applicationSettings;
+}
+
 function getSelectedOption(){
     const params = new URLSearchParams(window.location.search);
     let target = ".";
@@ -44,10 +49,10 @@ function getSelectedOption(){
 }
 
 async function setApplicationMode(changedTextBox){
-    var applicationMode = await chrome.storage.sync.get(null);
+    var applicationSettings = await getApplicationSettings();
     var currentStatus = document.getElementById(changedTextBox).checked;
-    applicationMode[changedTextBox] = currentStatus;
-    await chrome.storage.sync.set( applicationMode, function (data){
+    applicationSettings[changedTextBox] = currentStatus;
+    await chrome.storage.sync.set( applicationSettings, function (data){
         if(chrome.runtime.lastError){
             console.error("Error: ", chrome.lastError.message);
         }
@@ -66,9 +71,9 @@ $('.link-section').click(function() {
 
 async function showSelectedOption(target){
     console.log(typeof target);
-    let applicationMode = await chrome.storage.sync.get(null);
-    imageDescriptionMode.checked = applicationMode[IMAGE_DESCRIPTION_MODE];
-    socialMediaMode.checked = applicationMode[SOCIAL_MEDIA_MODE];
+    let applicationSettings = await getApplicationSettings();
+    imageDescriptionMode.checked = applicationSettings[IMAGE_DESCRIPTION_MODE];
+    socialMediaMode.checked = applicationSettings[SOCIAL_MEDIA_MODE];
     $('#selected-option-container div').hide();
     $(target).show();
 }

@@ -14,48 +14,34 @@
             }
     ],
     "commands": {
-        "turn-on-extension": {
-          "suggested_key": {
-                "default": "Ctrl+Shift+Up",
-                "mac": "Command+Shift+Up"
-            },
-          "description": "Key shortcut to turn on the extension."
-        },
-        "turn-off-extension": {
+        "extension-status": {
             "suggested_key": {
-                "default": "Ctrl+Shift+Down",
-                "mac": "Command+Shift+Down"
-            },
-            "description": "Key shortcut to turn off the extension."
-        },
-        "stop-text-to-speech": {
-            "suggested_key": {
-                "default": "Ctrl+Shift",
-                "mac": "Command+Shift"
-            },
-            "description": "Key shortcut to stop the text to speech mode of the extension."
-        },
-        "pause-text-to-speech": {
-            "suggested_key": {
-                "default": "Ctrl+Shift+Left",
-                "mac": "Command+Shift+Left"
-            },
-            "description": "Key shortcut to pause the text to speech mode of the extension."
-        },
-        "resume-text-to-speech": {
-            "suggested_key": {
-                "default": "Ctrl+Shift+Right",
-                "mac": "Command+Shift+Right"
-            },
-            "description": "Key shortcut to resume the text to speech mode of the extension if it was paused."
-        },
-        "extension-shortcuts-guide": {
-            "suggested_key": {
-                "default": "Ctrl+Shift+Space",
-                "mac": "Command+Shift+Space"
-            },
-            "description": "Key shortcut to open the guide for all shortcuts of the extension."
-        }
+                  "default": "Ctrl+Up",
+                  "mac": "Command+Up"
+              },
+            "description": "Key shortcut to turn on/off the extension."
+          },
+          "stop-text-to-speech": {
+              "suggested_key": {
+                  "default": "Ctrl+Down",
+                  "mac": "Command+Down"
+              },
+              "description": "Key shortcut to stop the text to speech mode of the extension."
+          },
+          "text-to-speech-status": {
+              "suggested_key": {
+                  "default": "Ctrl+Right",
+                  "mac": "Command+Right"
+              },
+              "description": "Key shortcut to pause/resume the text to speech mode of the extension."
+          },
+          "extension-shortcuts-guide": {
+              "suggested_key": {
+                  "default": "Ctrl+Left",
+                  "mac": "Command+Left"
+              },
+              "description": "Key shortcut to open the audio guide for all shortcuts of the extension."
+          }
     },
     "action": {
         "default_popup": "source.html",

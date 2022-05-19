@@ -5,31 +5,39 @@ function processMessage(message){
     });
 }
 
+async function setApplicationSettings(applicationSettings){
+    await chrome.storage.sync.set( applicationSettings, function (data){
+        if(chrome.runtime.lastError){
+            console.error("Error: ", chrome.lastError.message);
+        }
+        console.log("Data: ", data);
+    });
+}
+
+async function getApplicationSettings(){
+    let applicationSettings = await chrome.storage.sync.get(null);
+    return applicationSettings;
+}
+
 function processExtensionGuide(){
     const guideMessage = `Here is the guide for all shortcuts of the extension.
-    To turn on the extension press Ctrl+Shift+Up arrow or Command+Shift+Up arrow if you are a mac user.
-    If you want to turn off the extension press Ctrl+Shift+Down arrow or Command+Shift+Down for mac users.
-    Press Ctrl+Shift+Left arrow or Command+Shift+Left arrow (if you are a mac user) to pause text to speech mode of the extension.
-    Press  Ctrl+Shift+Right arrow or Command+Shift+Left arrow (for mac users) to resume the text to speech mode of the extension if it was paused.
-    If you want to stop the text to speech of the extension press Ctrl+Shift or Command+Shift if you are a mac user.
-    To open the shortcuts guide of the extension press Ctrl+Shift+Space or Command+Shift+Space for mac users.`;
+    To turn on or turn off the extension press Ctrl+Shift+Up arrow or Command+Shift+Up arrow if you are a mac user. 
+    If you want to stop the text to speech of the extension press Ctrl+Shift+Down or Command+Shift+Down for mac users.
+    To open the shortcuts guide of the extension press Ctrl+Shift+Left arrow or Command+Shift+Left arrow if you are a mac user.
+    Press Ctrl+Shift+Right arrow or Command+Shift+Left arrow (for mac users) to resume the text to speech mode of the extension or to pause it.`
     chrome.tts.speak(guideMessage, {'enqueue': true});
 }
 
 chrome.runtime.onInstalled.addListener(async function(details){
     if(details.reason == "install"){
         //call a function to handle a first install
-        let applicationMode = {
+        let appliationSettings = {
             "extension-status": false,
+            "text-to-speech-status": true,
             "image-description-mode": false,
             "social-media-feed-mode": false
         }
-        await chrome.storage.sync.set( applicationMode, function (data){
-            if(chrome.runtime.lastError){
-                console.error("Error: ", chrome.lastError.message);
-            }
-            console.log("Data: ", data);
-        });
+        setApplicationSettings(appliationSettings);
         console.log("Extension installed!");
 
     }else if(details.reason == "update"){
@@ -50,38 +58,40 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
 });
 
 
-chrome.commands.onCommand.addListener(async function(command){
+//chrome.commands.onCommand.addListener(async function(command){
+    chrome.commands.onCommand.addListener(async function(command ) {
     console.log(`Command: "${command}" called!`);
-    let applicationMode = {};
+    const EXTENSION_STATUS = "extension-status";
+    const TTS_STATUS = "text-to-speech-status";
+    const STOP_TEXT_TO_SPEECH  = "stop-text-to-speech";
+    const EXTENSION_SHORTCUTS_GUIDE = "extension-shortcuts-guide";
+    let applicationSettings = await getApplicationSettings();
     switch(command) {
-        case "turn-on-extension":
-            applicationMode["extension-status"] = true;
+        case EXTENSION_STATUS:
+            applicationSettings[EXTENSION_STATUS] = !applicationSettings[EXTENSION_STATUS];
+            if(applicationSettings[EXTENSION_STATUS] === false){
+                chrome.tts.stop();
+            }
             break;
-        case "turn-off-extension":
-            applicationMode["extension-status"] = false;
+        case TTS_STATUS:
+            applicationSettings[TTS_STATUS] = !applicationSettings[TTS_STATUS];
+            if(applicationSettings[TTS_STATUS] === false){
+                chrome.tts.pause();
+            }
+            else{
+                chrome.tts.resume();
+            }
             break;
-        case "stop-text-to-speech":
+        case STOP_TEXT_TO_SPEECH:
             chrome.tts.stop(); 
             break;
-        case "pause-text-to-speech":
-            chrome.tts.pause();
-            break;
-        case "resume-text-to-speech":
-            chrome.tts.resume();
-            break;
-        case "extension-shortcuts-guide":
+        case EXTENSION_SHORTCUTS_GUIDE:
             processExtensionGuide();
             break;
         default:
           console.log("Invalid key shortcut!");
     }
-    if(Object.keys(applicationMode).length){
-        chrome.tts.stop();
-        await chrome.storage.sync.set( applicationMode, function (data){
-            if(chrome.runtime.lastError){
-                console.error("Error: ", chrome.lastError.message);
-            }
-            console.log("Data: ", data);
-        });
+    if(Object.keys(applicationSettings).length){
+        await setApplicationSettings(applicationSettings);
     }
   });
