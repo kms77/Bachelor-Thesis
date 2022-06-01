@@ -19,6 +19,7 @@ outline: 0.1em solid #666666;
 table {
     margin:1em 0em;
 }
+
 table, th, td {
     border:1px solid black;
     font-size: 16px;
@@ -61,7 +62,6 @@ p{
     font-size: 16px;
     padding-top: 1em;
 }
-
 
 #page-wrapper #sidebar-container{
     background-color: #0099CC;

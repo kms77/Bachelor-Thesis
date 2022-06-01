@@ -4,6 +4,7 @@ const EXTENSION_STATUS = "extension-status";
 const INFO_SECTION_OPTION = "info-section";
 const SETTNIGS_SECTION_OPTION = "settings-section";
 const INACTIVE_EXTENSION = "inactive";
+const CHECK_EXTENSION_SETTINGS = "extension_settings_signal";
 var appStatus = document.getElementById("on-off-block--toggle");
 var submitButton = document.getElementById("form-block__submit");
 var settingsButton = document.getElementById("menu-block__settings_button");
@@ -14,7 +15,6 @@ if(appStatus){
     appStatus.addEventListener('click', changeAppStatus, false);
 }
 
-
 if(settingsButton){
   settingsButton.addEventListener('click', function(){
     if(!($(appStatus).hasClass(INACTIVE_EXTENSION))){
@@ -24,7 +24,6 @@ if(settingsButton){
 }
 
 if(infoButton){
-  console.log("Info button clicked!");
   infoButton.addEventListener('click', function(){
     if(!($(appStatus).hasClass(INACTIVE_EXTENSION))){
       goToOptions(INFO_SECTION_OPTION);
@@ -42,6 +41,7 @@ async function setApplicationSettings(applicationSettings){
       }
       console.log("Data: ", data);
   });
+  //extensionSettingsChanged();
 }
 
 async function getApplicationSettings(){
@@ -49,21 +49,35 @@ async function getApplicationSettings(){
   return applicationSettings;
 }
 
-async function getPageData(){
-  let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  await chrome.scripting.executeScript({
-    target: { tabId: tab.id },
-    files: ["./node_modules/jquery/dist/jquery.min.js", "./node_modules/axios/dist/axios.min.js", "scrollEvent.js"]
-  });
-}
+// function extensionSettingsChanged() {
+//   chrome.tabs.query({currentWindow: true, active: true}, function (tabs){
+//     var activeTab = tabs[0];
+//     chrome.tabs.sendMessage(activeTab.id, {"message": CHECK_EXTENSION_SETTINGS}, response => {
+//         if(response.complete){
+//           console.log("Application settings updated successfully!");
+//         }
+//         else{
+//           console.log("Application settings was not updated!");
+//         }
+//       });
+//  });
+// }
 
-async function checkIfSocialMedia(){
-  let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  await chrome.scripting.executeScript({
-    target: { tabId: tab.id },
-    files: ["./node_modules/jquery/dist/jquery.min.js", "./node_modules/axios/dist/axios.min.js", "socialMedia.js"]
-  });
-}
+// async function getPageData(){
+//   let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+//   await chrome.scripting.executeScript({
+//     target: { tabId: tab.id },
+//     files: ["./node_modules/jquery/dist/jquery.min.js", "./node_modules/axios/dist/axios.min.js", "scrollEvent.js"]
+//   });
+// }
+
+// async function checkIfSocialMedia(){
+//   let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+//   await chrome.scripting.executeScript({
+//     target: { tabId: tab.id },
+//     files: ["./node_modules/jquery/dist/jquery.min.js", "./node_modules/axios/dist/axios.min.js", "socialMedia.js"]
+//   });
+// }
 
 function turnOnTheExtension(){
   $(appStatus).removeClass(INACTIVE_EXTENSION);
@@ -78,23 +92,22 @@ function turnOffTheExtension(){
 }
 
 async function getApplicationMode(){
-  console.log("Yess");
   let applicationSettings = await getApplicationSettings();
+  console.log("Application settings in  script.js: ", applicationSettings);
   if(applicationSettings){
-    console.log("AppStatus: ", applicationSettings[EXTENSION_STATUS]);
     if(applicationSettings[EXTENSION_STATUS]){
       turnOnTheExtension();
-      let imageDescriptionMode = applicationSettings[IMAGE_DESCRIPTION_MODE];
-      let linkedInFeedMode = applicationSettings[SOCIAL_MEDIA_MODE];
-      if((imageDescriptionMode && !linkedInFeedMode) || (!imageDescriptionMode && linkedInFeedMode)){
-        if(imageDescriptionMode){
-          getPageData();
-        }
-        else{
-          checkIfSocialMedia();
-        // sendRequest();
-        }
-      }
+      console.log("Extension is turned-on!");
+      // let imageDescriptionMode = applicationSettings[IMAGE_DESCRIPTION_MODE];
+      // let linkedInFeedMode = applicationSettings[SOCIAL_MEDIA_MODE];
+      // if((imageDescriptionMode && !linkedInFeedMode) || (!imageDescriptionMode && linkedInFeedMode)){
+      //   if(imageDescriptionMode){
+      //     getPageData();
+      //   }
+      //   else{
+      //     checkIfSocialMedia();
+      //   }
+      // }
     }
     else{
       turnOffTheExtension();
@@ -104,7 +117,6 @@ async function getApplicationMode(){
   else{
     console.log("Error: incorrect application mode configuration!");
   }
-  console.log("appMode: ", applicationSettings);
 }
 
 async function changeAppStatus(){
@@ -122,7 +134,7 @@ async function changeAppStatus(){
 
 function goToOptions(option){
   var extensionID = chrome.runtime.id;
-  var pageURL = "chrome-extension://" + extensionID + "/options/options.html" + "?option=" + option;
+  var pageURL = "chrome-extension://" + extensionID + "/options_page/options.html" + "?option=" + option;
   try{
     window.open(pageURL, '_blank').focus();
   }

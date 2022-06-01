@@ -4,13 +4,14 @@
     "version": "1.0",
     "manifest_version": 3,
     "background": {
-        "service_worker": "background.js"
+        "service_worker": "./background_service_workers/background_wrapper.js",
+        "type": "module"
     },
-    "options_page": "./options/options.html",
+    "options_page": "./options_page/options.html",
     "content_scripts": [
             {
-                "matches": ["http://127.0.0.1:5000/data", "http://127.0.0.1:5000/images"],
-                "js":["./node_modules/jquery/dist/jquery.min.js","./node_modules/axios/dist/axios.min.js"]
+                "matches": ["<all_urls>", "http://127.0.0.1:5000/data", "http://127.0.0.1:5000/images"],
+                "js":["./node_modules/jquery/dist/jquery.min.js","./node_modules/axios/dist/axios.min.js", "./content_scripts/image_description_script.js", "./content_scripts/social_media_script.js","./content_scripts/application_script.js"]
             }
     ],
     "commands": {
@@ -43,20 +44,21 @@
               "description": "Key shortcut to open the audio guide for all shortcuts of the extension."
           }
     },
+    "permissions": ["storage", "activeTab", "unlimitedStorage", "scripting", "tts"],
+    "host_permissions": ["<all_urls>"],
     "action": {
         "default_popup": "source.html",
         "default_icon": {
-            "16": "/logo/icon16.png",
-            "32": "/logo/icon32.png",
-            "48": "/logo/icon48.png",
-            "128": "/logo/icon128.png"
+            "16": "./assets/extension_logo/icon16.png",
+            "32": "./assets/extension_logo/icon32.png",
+            "48": "./assets/extension_logo/icon48.png",
+            "128": "./assets/extension_logo/icon128.png"
         }
     },
-    "permissions": ["storage", "activeTab", "unlimitedStorage", "scripting", "tts"],
     "icons": {
-        "16": "/logo/icon16.png",
-        "32": "/logo/icon32.png",
-        "48": "/logo/icon48.png",
-        "128": "/logo/icon128.png"
+        "16": "./assets/extension_logo/icon16.png",
+        "32": "./assets/extension_logo/icon32.png",
+        "48": "./assets/extension_logo/icon48.png",
+        "128": "./assets/extension_logo/icon128.png"
     }
 }
