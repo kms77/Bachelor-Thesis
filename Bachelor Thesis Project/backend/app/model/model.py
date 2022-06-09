@@ -37,7 +37,7 @@ class ClipCaptionModel(nn.Module):
         return torch.zeros(batch_size, self.prefix_length, dtype=torch.int64)
 
     def forward(self, tokens: T, prefix: T, mask: Optional[T] = None, labels: Optional[T] = None):
-        # Generative Pre-trained Transformer 3 (GPT-3) is an autoregressive language model that uses deep learning
+        # Generative Pre-trained Transformer is an autoregressive language model that uses deep learning
         # to produce human-like text
         # wte is a look-up table which holds all the vectors that correspond to the token value
         embedding_text = self.gpt.transformer.wte(tokens)

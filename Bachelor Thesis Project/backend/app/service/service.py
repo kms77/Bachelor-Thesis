@@ -2,60 +2,49 @@ from __future__ import print_function
 from urllib import request
 from flask import Flask, request
 from flask_cors import CORS, cross_origin
-import os
 from flask import send_from_directory
-from scraping.scraping import Scraping
 from captioning.captioning import Captioning
 import urllib
-import asyncio
-
+import os
 
 app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
-# @app.route("/data",methods = ['POST', 'GET'])
-# @cross_origin()
-# def get_data():
-#     result= ""
-#     if request.method == 'POST':
-#         request_data = request.json
-#         usernameCredentials = request_data['username']
-#         passwordCredentials = request_data['password']
-#         result = Scraping().scraping_data(usernameCredentials, passwordCredentials)
-#         print("Result: ", result)
-#     return result
-
-@app.route("/images",methods = ['POST', 'GET'])
+"""
+Method which triggers when the '\image' route is accessed.  
+A JSON which contains the image URL is received if the request was done through a 'POST' request method.
+The image is downloaded in 'image' package and then processed. In the end, a caption of the image is returned.
+:param : none
+:return imageCaption: a string which is the caption of the received image
+"""
+@app.route("/image",methods = ['POST', 'GET'])
 @cross_origin()
-def get_images():
-    # result = {}
-    # allCaptions = []
+def get_image():
     imageCaption = ""
     if request.method == 'POST':
         request_data = request.json
         imageURL = request_data['imageURL']
-        # allImages = request_data['images']
         urllib.request.urlretrieve(imageURL, "./utils/image/image.jpg")
         imageCaption = Captioning().get_image_caption()
         os.remove("./utils/image/image.jpg")
-    #     for src in allImages:
-    #         urllib.request.urlretrieve(src, "./utils/image/image.jpg")
-    #         imageCaption = Captioning().get_image_caption()
-    #         os.remove("./utils/image/image.jpg")
-    #         allCaptions.append(imageCaption)
-    # print("\n")
-    # print(allCaptions)
-    # result['data'] = allCaptions
-    print("Image Caption ----->  " + imageCaption)
     return imageCaption
 
+"""
+Method which triggers when the main page of the application is accessed.
+:param : none
+:return : a string which is the message that will be shown on the main page of the application
+"""
 @app.route("/",methods = ['POST', 'GET'])
 def root_page():
     return "<h1>Main Page</h1>"
 
+"""
+Method which is done in order to prevent an error.
+:param : none
+:return : an action which prevents the error
+"""
 @app.route('/favicon.ico',methods = ['POST', 'GET'])
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static'),
                                'favicon.ico', mimetype='utils/favicon.png')
-                         

@@ -3,41 +3,37 @@ const SOCIAL_MEDIA_MODE = "social-media-feed-mode";
 const EXTENSION_STATUS = "extension-status";
 const CHECK_EXTENSION_SETTINGS = "extension_settings_signal";
 const OPTIONS_SIGNAL = "options_signal";
-// var lastKnownScrollPosition = 0;
-// document.addEventListener('scroll', async function (){
-//     let appliationSettings = await getApplicationSettings();
-//     if(appliationSettings[EXTENSION_STATUS] === true){
-//         let currentScrollPosition = window.scrollY;
-//         if(currentScrollPosition>= lastKnownScrollPosition + 2000)
-//         {
-//             lastKnownScrollPosition = currentScrollPosition;
-//             if(appliationSettings[SOCIAL_MEDIA_MODE] === true){
-//                 analyzePageData();
-//             }
-//             else{
-//                 onEntry();
-//             }
-//         }
-//     }
-// });
+var lastKnownScrollPosition = 0;
 
-async function getApplicationSettings(){
-    let applicationSettings = await chrome.storage.sync.get(null);
-    return applicationSettings;
+async function addScrollEvent(){
+ document.addEventListener('scroll', function (){
+    let currentScrollPosition = window.scrollY;
+    if(currentScrollPosition>= lastKnownScrollPosition + 2000)
+        {
+            lastKnownScrollPosition = currentScrollPosition;
+            console.log("Scroll position updated!");
+            checkExtensionSettings();
+        }
+    });
 }
 
-// chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
-//     if(request.message === CHECK_EXTENSION_SETTINGS){
-//         // resolve promise
-//         console.log("In application_script.js, onMessage: ", request.message);
-//        checkExtensionSettings();
-//        sendResponse({complete: true});
-//     }
-//     else{
-//         sendResponse({complete: false});
-//     }
-//     return true;
-// });
+// get the current status of the extension settings in order to make changes on the page accordinly
+window.onload = onWindowLoad();
+
+async function onWindowLoad(){
+   await addScrollEvent();
+   await checkExtensionSettings();
+}
+/**
+ * Method which returns the chrome storage data(the settings of the extension).
+ *
+ * @param {}
+ * @return {Object} extensionSettings The data object which contains the current extenison settings as {key: value} pairs.
+ */
+async function getExtensionSettings(){
+    let extensionSettings = await chrome.storage.sync.get(null);
+    return extensionSettings;
+}
 
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse){
     console.log("Message received: ", message.text);
@@ -46,63 +42,22 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse){
     }
 });
 
-chrome.storage.onChanged.addListener(function(changes, namespace){
+chrome.storage.onChanged.addListener(function(){
     checkExtensionSettings();
-    // chrome.tabs.query({currentWindow: true, active: true}, function (tabs){
-    //     const CHECK_EXTENSION_SETTINGS = "extension_settings_signal";
-    //     console.log("In extension settings! No of tabs: ", tabs.length);
-    //     for(let index = 0; index<tabs.length; ++index){
-    //     chrome.tabs.sendMessage(tabs[index].id, {"message": CHECK_EXTENSION_SETTINGS}, response => {
-    //         var lastError = chrome.runtime.lastError;
-    //         if (lastError) {
-    //             console.log(lastError.message);
-    //             // 'Could not establish connection. Receiving end does not exist.'
-    //             return;
-    //         }
-    //         if(response.complete){
-    //             console.log("Application settings updated successfully for tab with id: !", tabs[index].id);
-    //         }
-    //         else{
-    //             console.log("Application settings was not updated for tab with id: !", tabs[index].id);
-    //         }
-    //        });
-    //    } 
-// });
 });
 
-
-// async function getImageCaption(imageSrc){
-//     var imageCaption = "";
-//     var dataObject = {
-//       imageURL: imageSrc
-//     };
-//     await axios({
-//       method: 'POST',
-//       //  url: 'https://hear-me-assistant.herokuapp.com/data',
-//       url: 'http://127.0.0.1:5000/images',
-//       data: dataObject,
-//       crossDomain: true
-//     }).then( function(response) {
-//         response=String(response.data);
-//         imageCaption = response;
-//     });
-//     return imageCaption;
-//   }
-
-checkExtensionSettings();
-
 async function checkExtensionSettings(){
-    // possible to return a promise
-    var applicationSettings = await getApplicationSettings();
-    console.log("Application Settings in application_script.js: \n", applicationSettings);
-    if(applicationSettings[EXTENSION_STATUS] === true){
+    var extensionSettings = await getExtensionSettings();
+    console.log("Application Settings in application_script.js: \n", extensionSettings);
+    if(extensionSettings[EXTENSION_STATUS] === true){
         let scrollEvent = false;
-        if(applicationSettings[IMAGE_DESCRIPTION_MODE] === true){
-            //startImageDescriptionMode();
+        if(extensionSettings[IMAGE_DESCRIPTION_MODE] === true){
+            let result = await getAllImages();
+            await sendImages(result);
             scrollEvent = true;
         }
-        if(applicationSettings[SOCIAL_MEDIA_MODE] === true){
-            //startSocialMediaMode();
+        if(extensionSettings[SOCIAL_MEDIA_MODE] === true){
+            analyzePageData();
             scrollEvent = true;
         }
         if(scrollEvent === true){
@@ -113,3 +68,27 @@ async function checkExtensionSettings(){
         console.log("Remove scroll event!");
     }
 }
+
+/**
+ * Method which gets the image source as a parameter and 
+ *
+ * @param {String} imageSrc An image source which represents the URL address of the image. 
+ * @return {String} imageCaption A textual description of the image that source was the paramether.
+ */
+async function getImageCaption(imageSrc){
+    var imageCaption = "";
+    var dataObject = {
+      imageURL: imageSrc
+    };
+    await axios({
+      method: 'POST',
+      //  url: 'https://hear-me-assistant.herokuapp.com/image',
+      url: 'http://127.0.0.1:5000/image',
+      data: dataObject,
+      crossDomain: true
+    }).then( function(response) {
+        response=String(response.data);
+        imageCaption = response;
+    });
+    return imageCaption;
+  }

@@ -1,11 +1,11 @@
 {
     "name": "Hear Me Assistant",
     "description": "Chrome extension tool for visually impaired people.",
+    "author": "Attila Komsa",
     "version": "1.0",
     "manifest_version": 3,
     "background": {
-        "service_worker": "./background_service_workers/background_wrapper.js",
-        "type": "module"
+        "service_worker": "./background_service_workers/background_wrapper.js"
     },
     "options_page": "./options_page/options.html",
     "content_scripts": [
@@ -47,7 +47,7 @@
     "permissions": ["storage", "activeTab", "unlimitedStorage", "scripting", "tts"],
     "host_permissions": ["<all_urls>"],
     "action": {
-        "default_popup": "source.html",
+        "default_popup": "./popup_window/source.html",
         "default_icon": {
             "16": "./assets/extension_logo/icon16.png",
             "32": "./assets/extension_logo/icon32.png",

@@ -10,7 +10,8 @@ var imageDescriptionMode = document.getElementById(IMAGE_DESCRIPTION_MODE);
 var socialMediaMode = document.getElementById(SOCIAL_MEDIA_MODE);
 
 /**
- * Event listener which fires when the window has loaded and the getSelectedOption() method is called
+ * Event listener which fires when the window has loaded
+ * The getSelectedOption() method is called
  * 
  * @param {} 
  * @return {}
@@ -71,7 +72,7 @@ if(closeButtonID){
  * @param {}
  * @return {Object} extensionSettings The data object which contains the current extenison settings as {key: value} pairs.
  */
-async function getApplicationSettings(){
+async function getExtensionSettings(){
     let extensionSettings = await chrome.storage.sync.get(null);
     return extensionSettings;
 }
@@ -82,7 +83,7 @@ async function getApplicationSettings(){
  * @param {Object} extensionSettings The data object which will be store.
  * @return {}
  */
- async function setApplicationSettings(extensionSettings){
+ async function setExtensionSettings(extensionSettings){
     await chrome.storage.sync.set( extensionSettings, function (){
         if(chrome.runtime.lastError){
             console.error("Error: ", chrome.lastError.message);
@@ -98,10 +99,10 @@ async function getApplicationSettings(){
  * @return {}
  */
 async function setApplicationMode(changedTextBox){
-    var extensionSettings = await getApplicationSettings();
+    var extensionSettings = await getExtensionSettings();
     var currentStatus = document.getElementById(changedTextBox).checked;
     extensionSettings[changedTextBox] = currentStatus;
-    setApplicationSettings(extensionSettings);
+    setExtensionSettings(extensionSettings);
 }
 
 /**
@@ -140,7 +141,7 @@ function getSelectedOption(){
  * @return {}
  */
 async function showSelectedOption(target){
-    let applicationSettings = await getApplicationSettings();
+    let applicationSettings = await getExtensionSettings();
     imageDescriptionMode.checked = applicationSettings[IMAGE_DESCRIPTION_MODE];
     socialMediaMode.checked = applicationSettings[SOCIAL_MEDIA_MODE];
     $('#selected-option-container div').hide();

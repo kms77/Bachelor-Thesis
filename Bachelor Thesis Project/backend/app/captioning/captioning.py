@@ -9,12 +9,14 @@ import skimage.io as io
 import PIL.Image
 from IPython.display import Image
 from model.model import ClipCaptionModel
-import asyncio
 
+# a torch.Tensor is a multi-dimensional matrix containing elements of a single data type
 T = torch.Tensor
 
 
 class Captioning:
+
+    # method generate beam() that is used to predict the next caption tokens with the beam search
     def generate_beam(self, model, tokenizer, beam_size: int = 5, prompt=None, embed=None, entry_length=67,
                       temperature=1., stop_token: str = '.'):
         model.eval()
@@ -74,6 +76,8 @@ class Captioning:
         output_texts = [output_texts[i] for i in order]
         return output_texts
 
+    # method generate beam() that is used to predict the next caption
+    # tokens with the beam search using a greedy approach
     def generate_caption(self,
                          model,
                          tokenizer,
@@ -128,6 +132,8 @@ class Captioning:
                 generated_list.append(output_text)
         return generated_list[0]
 
+    # method loads the CLIP model with its corresponding weights for the selected
+    # dataset and, after encoding the image, generates a caption for it
     def get_image_caption(self):
         clip_model, preprocess = clip.load("ViT-B/32", jit=False)
         tokenizer = GPT2Tokenizer.from_pretrained("gpt2")

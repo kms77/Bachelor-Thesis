@@ -1,28 +1,28 @@
 //---------------------------------------------General Extension Methods---------------------------------------------
 
 /**
- * Method which updates the chrome storage data(the settings of the extension).
- *
- * @param {Object} extensionSettings The data object which will be store.
- * @return {}
- */
-async function setApplicationSettings(extensionSettings){
-    await chrome.storage.sync.set( extensionSettings, function (){
-        if(chrome.runtime.lastError){
-            console.error("Error: ", chrome.lastError.message);
-        }
-    });
-}
-
-/**
  * Method which returns the chrome storage data(the settings of the extension).
  *
  * @param {}
  * @return {Object} extensionSettings The data object which contains the current extenison settings as {key: value} pairs.
  */
-async function getApplicationSettings(){
+async function getExtensionSettings(){
     let extensionSettings = await chrome.storage.sync.get(null);
     return extensionSettings;
+}
+
+/**
+ * Method which updates the chrome storage data(the settings of the extension).
+ *
+ * @param {Object} extensionSettings The data object which will be store.
+ * @return {}
+ */
+ async function setExtensionSettings(extensionSettings){
+    await chrome.storage.sync.set( extensionSettings, function (){
+        if(chrome.runtime.lastError){
+            console.error("Error: ", chrome.lastError.message);
+        }
+    });
 }
 
 /**
@@ -42,14 +42,14 @@ chrome.runtime.onInstalled.addListener(async function(details){
             "image-description-mode": false,
             "social-media-feed-mode": false,
         }
-        setApplicationSettings(extensionSettings);
+        setExtensionSettings(extensionSettings);
         console.log("Extension installed or updated!");
     }
 });
 
 /**
  * Event listener which fires when the active tab in a window changes.
- * If the active tab changes than a message is send to the content scripts in order to verify if they were added to the current page.
+ * If the active tab changes then a message is send to the content scripts in order to verify if they were added to the current page.
  * A response message is verified and if it is not valid the content scripts files are injected into the web page.
  * Any error which is thrown because of an invalid accessed page is catch and printed in the console.
  * 
@@ -70,7 +70,7 @@ chrome.runtime.onInstalled.addListener(async function(details){
             chrome.scripting.executeScript(
                 {
                   target: {tabId: tabId},
-                  files: ['./content_scripts/application_script.js'],
+                  files: ["./node_modules/jquery/dist/jquery.min.js", "./node_modules/axios/dist/axios.min.js", './content_scripts/image_description_script.js', './content_scripts/social_media_script.js', './content_scripts/application_script.js'],
                 },
                 () => {
                     let error = chrome.runtime.lastError;

@@ -14,7 +14,7 @@
     const TTS_STATUS = "text-to-speech-status";
     const STOP_TEXT_TO_SPEECH  = "stop-text-to-speech";
     const EXTENSION_SHORTCUTS_GUIDE = "extension-shortcuts-guide";
-    let applicationSettings = await getApplicationSettings();
+    let applicationSettings = await getExtensionSettings();
     // check which command property triggered the action
     switch(command) {
         case EXTENSION_STATUS:
@@ -43,7 +43,7 @@
     }
     // the chrome storage is updated if the triggered action changed the settings of the extension
     if(Object.keys(applicationSettings).length){
-        await setApplicationSettings(applicationSettings);
+        await setExtensionSettings(applicationSettings);
     }
   });
 

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset= utf-8 meta name= viewport content= width=device-width initial-scale=1>
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self' http://127.0.0.1:5000/data http://127.0.0.1:5000/images"> <!--http://127.0.0.1:5000;"> connect-src 'self' http://127.0.0.1:5000"> -->
+        <link rel="stylesheet" href="style.css">
+        <script src="../node_modules/jquery/dist/jquery.min.js"></script>
+    </head>
+    <body>
+        <div id="head-container">
+            <div id="head-block">
+                <div id="logo-container">
+                    <div id="logo-block">
+                        <h1 class="logo-block__element"><img src="../assets/extension_logo/app_logo.png" alt="Hear Me Assistant Logo" width="35" height="25">&nbsp;H&nbsp;M&nbsp;A&nbsp;</h1>
+                        <h2 class="logo-block__element">Hear Me Assistant</h2>
+                    </div>
+                </div>
+                <div id="menu-container">
+                    <div id="menu-block">
+                        <button class="menu-block__button" id="menu-block__info_button" type="button"><span>&#8505;</span></button>
+                        <button class="menu-block__button" id= "menu-block__settings_button" type="button"><span>&#9881;</span></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="body-container">
+            <i><h3>Hear Me Asssitant is a Google Chrome extension that aims to help visually impaired people.</h3></i>
+        </div>
+        <div id="app-status-container">
+            <div id="on-off-block">
+                <div id="on-off-block--toggle">
+                    <div id="on-off-block__circle"></div>
+                </div>
+            </div>
+        </div>
+        <script type="module" src="script.js"></script>
+    </body>
+</html>
