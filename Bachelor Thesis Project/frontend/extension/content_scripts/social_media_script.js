@@ -74,7 +74,7 @@ async function analyzePageData(){
 }
 
 function getPostDescription(postElement, index){
-    return new Promise(function(resolve){
+    return new Promise(async function(resolve){
         let intro = '';
         var postDescription = '';
         let auxiliarValue = '';
@@ -106,7 +106,7 @@ function getPostDescription(postElement, index){
         auxiliarValue = postElement.querySelector(arraySocialMedia[index]["image"]);
         if(auxiliarValue !=null){
             let imageSrc = auxiliarValue.getAttribute('src');
-            let imageCaption = "Image"; //await getImageCaption(imageSrc);
+            let imageCaption = await getImageCaption(imageSrc);
             intro = getIntroOfElement("image");
             postDescription = postDescription + intro + imageCaption + ". ";
         }
