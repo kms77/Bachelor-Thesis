@@ -56,7 +56,8 @@
  */
 function processMessage(message){
     return new Promise((resolve) => {
-        chrome.tts.speak(message, {'enqueue': true});
+        //chrome.tts.speak(message, {'enqueue': true});
+        console.log("Message: ", message);
         resolve("Done");
     });
 }

@@ -66,9 +66,9 @@ async function analyzePageData(){
             // let language = await chrome.i18n.detectLanguage(textMessage);
             // console.log("Language: ", language);
             const  messageOut = await sendMessagePromise(textMessage);
-            chrome.runtime.sendMessage({message: textMessage}, function(response) {
-                 console.log("Status: ", messageOut);
-              });
+            // chrome.runtime.sendMessage({message: textMessage}, function(response) {
+            //      console.log("Status: ", messageOut);
+            //   });
         }
     } 
 }
@@ -106,7 +106,7 @@ function getPostDescription(postElement, index){
         auxiliarValue = postElement.querySelector(arraySocialMedia[index]["image"]);
         if(auxiliarValue !=null){
             let imageSrc = auxiliarValue.getAttribute('src');
-            let imageCaption = await getImageCaption(imageSrc);
+            let imageCaption = // await getImageCaption(imageSrc);
             intro = getIntroOfElement("image");
             postDescription = postDescription + intro + imageCaption + ". ";
         }
