@@ -1,20 +1,4 @@
-// let lastKnownScrollPosition = 0;
 var checkDuplicates = new Map();
-
-async function onEntry(){
-  // document.removeEventListener('scroll', onScroll);
-  // await onScroll();
-}
-
-// async function onScroll() {
-//   document.addEventListener('scroll', onScroll, true);
-//   let currentScrollPosition = window.scrollY;
-//   if(currentScrollPosition>= lastKnownScrollPosition + 2000)
-//   {
-//     lastKnownScrollPosition = currentScrollPosition;
-//     await onEntry();
-//   }
-// }
 
 async function getAllImages(){
   var imageCollection = document.getElementsByTagName("img");
@@ -38,10 +22,8 @@ async function getAllImages(){
       let uniqueImage = true;
       if(checkDuplicates.has(imageSrc)){
         let imageMapAlt = checkDuplicates.get(imageSrc);
-        if(imageMapAlt === imageAlt){
-          uniqueImage = false;
-          console.log("Image already exists in map!");
-        } 
+        uniqueImage = false;
+        console.log("Image already exists in map!");
       }
       if(uniqueImage === true){
         var imageDictionary = {};

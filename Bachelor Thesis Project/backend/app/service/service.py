@@ -1,15 +1,18 @@
 from __future__ import print_function
-from urllib import request
 from flask import Flask, request
 from flask_cors import CORS, cross_origin
 from flask import send_from_directory
 from captioning.captioning import Captioning
 import urllib
+import threading
+import time
+from multiprocessing import Process, Lock
 import os
-
 app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
+
+sem = threading.Semaphore()
 
 """
 Method which triggers when the '\image' route is accessed.  
@@ -23,11 +26,19 @@ The image is downloaded in 'image' package and then processed. In the end, a cap
 def get_image():
     imageCaption = ""
     if request.method == 'POST':
+        sem.acquire()
+        print("Before Process: ", request)
         request_data = request.json
         imageURL = request_data['imageURL']
-        urllib.request.urlretrieve(imageURL, "./utils/image/image.jpg")
-        imageCaption = Captioning().get_image_caption()
-        os.remove("./utils/image/image.jpg")
+        print("Image URL: ", imageURL)
+        try:
+            urllib.request.urlretrieve(imageURL, "./utils/image/image.jpg")
+            imageCaption = Captioning().get_image_caption()
+            os.remove("./utils/image/image.jpg")
+        except:
+            print("Error, couldn't download the image!")
+        print("After Process: ", imageCaption)
+        sem.release()
     return imageCaption
 
 """

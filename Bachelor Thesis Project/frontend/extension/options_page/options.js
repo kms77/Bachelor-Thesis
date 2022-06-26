@@ -1,13 +1,13 @@
-const IMAGE_DESCRIPTION_MODE= "image-description-mode";
-const SOCIAL_MEDIA_MODE = "social-media-feed-mode";
+const IMAGE_DESCRIPTION_MODE_CONSTANT = "image-description-mode";
+const SOCIAL_MEDIA_MODE_CONSTANT = "social-media-feed-mode";
 const INFO_SECTION_OPTION = "info-section";
 const SETTNIGS_SECTION_OPTION = "settings-section";
 const CHECK_EXTENSION_SETTINGS = "extension_settings_signal";
 const CLOSE_BUTTON_ID = "close-button-id";
 const EXTENSION_ID = "extension-id";
 var closeButtonID = document.getElementById(CLOSE_BUTTON_ID);
-var imageDescriptionMode = document.getElementById(IMAGE_DESCRIPTION_MODE);
-var socialMediaMode = document.getElementById(SOCIAL_MEDIA_MODE);
+var imageDescriptionMode = document.getElementById(IMAGE_DESCRIPTION_MODE_CONSTANT);
+var socialMediaMode = document.getElementById(SOCIAL_MEDIA_MODE_CONSTANT);
 
 /**
  * Event listener which fires when the window has loaded
@@ -39,7 +39,7 @@ $('.link-section').click(function() {
  */
 if(imageDescriptionMode){
     imageDescriptionMode.addEventListener('change', function(){
-        setApplicationMode(IMAGE_DESCRIPTION_MODE);
+        setApplicationMode(IMAGE_DESCRIPTION_MODE_CONSTANT);
     }, false);
 }
 
@@ -52,7 +52,7 @@ if(imageDescriptionMode){
  */
 if(socialMediaMode){
     socialMediaMode.addEventListener('change', function(){
-        setApplicationMode(SOCIAL_MEDIA_MODE);
+        setApplicationMode(SOCIAL_MEDIA_MODE_CONSTANT);
     }, false);
 }
 
@@ -142,8 +142,8 @@ function getSelectedOption(){
  */
 async function showSelectedOption(target){
     let applicationSettings = await getExtensionSettings();
-    imageDescriptionMode.checked = applicationSettings[IMAGE_DESCRIPTION_MODE];
-    socialMediaMode.checked = applicationSettings[SOCIAL_MEDIA_MODE];
+    imageDescriptionMode.checked = applicationSettings[IMAGE_DESCRIPTION_MODE_CONSTANT];
+    socialMediaMode.checked = applicationSettings[SOCIAL_MEDIA_MODE_CONSTANT];
     $('#selected-option-container div').hide();
     $(target).show();
 }

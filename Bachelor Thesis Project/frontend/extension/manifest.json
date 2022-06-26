@@ -44,6 +44,10 @@
               "description": "Key shortcut to open the audio guide for all shortcuts of the extension."
           }
     },
+    "web_accessible_resources": [{
+        "resources": ["assets/utils/language_intros.json"],
+        "matches": ["<all_urls>"]
+      }],
     "permissions": ["storage", "activeTab", "unlimitedStorage", "scripting", "tts"],
     "host_permissions": ["<all_urls>"],
     "action": {

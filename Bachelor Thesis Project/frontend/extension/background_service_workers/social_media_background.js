@@ -54,10 +54,11 @@
  * @param {String} message The message to be process.
  * @return {String} Promise resolve The confiramation that the message was processed.
  */
-function processMessage(message){
+function processMessage(message, language){
     return new Promise((resolve) => {
-        //chrome.tts.speak(message, {'enqueue': true});
+        chrome.tts.speak(message, {'lang': language, 'enqueue': true});
         console.log("Message: ", message);
+        console.log("Language: ", language);
         resolve("Done");
     });
 }
@@ -72,7 +73,7 @@ function processMessage(message){
  * @return {boolean} boolean value A value which indicates if the message channel should be keep open or not.
  */
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
-    processMessage(request.message).then(() => {
+    processMessage(request.message, request.language).then(() => {
         // confirmation that the message was received and processed
         sendResponse({complete: true});
       });

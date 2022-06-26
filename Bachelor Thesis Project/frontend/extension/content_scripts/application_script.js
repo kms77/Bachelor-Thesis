@@ -1,17 +1,24 @@
-const IMAGE_DESCRIPTION_MODE= "image-description-mode";
-const SOCIAL_MEDIA_MODE = "social-media-feed-mode";
+const IMAGE_DESCRIPTION_MODE_CONSTANT= "image-description-mode";
+const SOCIAL_MEDIA_MODE_CONSTANT = "social-media-feed-mode";
 const EXTENSION_STATUS = "extension-status";
 const CHECK_EXTENSION_SETTINGS = "extension_settings_signal";
 const OPTIONS_SIGNAL = "options_signal";
 var scrollEventAdded = false;
 var lastKnownScrollPosition = 0;
+var languagesJSON = "";
+
+
+async function getLanguagesJSON(){
+    let URL = chrome.runtime.getURL("./assets/utils/language_intros.json");
+    let responses = await fetch(URL);
+    languagesJSON = await responses.json();
+}
 
 async function addScrollEvent(){
     scrollEventAdded = true;
- document.addEventListener('scroll', function (){
-    let currentScrollPosition = window.scrollY;
-    if(currentScrollPosition>= lastKnownScrollPosition + 2000)
-        {
+    document.addEventListener('scroll', function (){
+        let currentScrollPosition = window.scrollY;
+        if(currentScrollPosition>= lastKnownScrollPosition + 2000){
             lastKnownScrollPosition = currentScrollPosition;
             console.log("Scroll position updated!");
             checkExtensionSettings();
@@ -30,6 +37,8 @@ function removeScrollEvent(){
 window.onload = onWindowLoad();
 
 async function onWindowLoad(){
+   await getLanguagesJSON();
+   console.log("languagesJSON: ", languagesJSON);
    await addScrollEvent();
    await checkExtensionSettings();
 }
@@ -41,7 +50,13 @@ async function onWindowLoad(){
  * @return {Object} extensionSettings The data object which contains the current extenison settings as {key: value} pairs.
  */
 async function getExtensionSettings(){
-    let extensionSettings = await chrome.storage.sync.get(null);
+    let extensionSettings = null;
+    try{
+        extensionSettings = await chrome.storage.sync.get(null);
+    }
+    catch(error){
+        console.log(error);
+    }
     return extensionSettings;
 }
 
@@ -59,35 +74,41 @@ chrome.storage.onChanged.addListener(function(){
 
 async function checkExtensionSettings(){
     var extensionSettings = await getExtensionSettings();
-    console.log("Application Settings in application_script.js: \n", extensionSettings);
-    if(extensionSettings[EXTENSION_STATUS] === true){
-        let scrollEvent = false;
-        if(extensionSettings[IMAGE_DESCRIPTION_MODE] === true){
-            if(document.hasFocus()){
-                let result = await getAllImages();
-                await sendImages(result);
+    if(extensionSettings !== null){
+        console.log("Application Settings in application_script.js: \n", extensionSettings);
+        if(extensionSettings[EXTENSION_STATUS] === true){
+            let scrollEvent = false;
+            if(extensionSettings[IMAGE_DESCRIPTION_MODE_CONSTANT] === true){
+            // if(document.hasFocus()){
+                if(!document.hidden){
+                    console.log("HAS FOCUS! ");
+                    let result = await getAllImages();
+                    await sendImages(result);
+                }
+                //}
+                scrollEvent = true;
             }
-            scrollEvent = true;
-        }
-        if(extensionSettings[SOCIAL_MEDIA_MODE] === true){
-            if(document.hasFocus()){
-                analyzePageData();
+            if(extensionSettings[SOCIAL_MEDIA_MODE_CONSTANT] === true){
+                //if(document.hasFocus()){
+                if(!document.hidden){    
+                    analyzePageData();
+                }
+                scrollEvent = true;
             }
-            scrollEvent = true;
+            if(scrollEvent === true){
+                console.log("Add scroll event!");
+                if(scrollEventAdded === false)
+                {
+                    addScrollEvent();
+                }
+            }
         }
-        if(scrollEvent === true){
-            console.log("Add scroll event!");
-            if(scrollEventAdded === false)
+        else{
+            console.log("Remove scroll event!");
+            if(scrollEventAdded === true)
             {
-                addScrollEvent();
+                removeScrollEvent();
             }
-        }
-    }
-    else{
-         console.log("Remove scroll event!");
-         if(scrollEventAdded === true)
-        {
-            removeScrollEvent();
         }
     }
 }
@@ -112,6 +133,9 @@ async function getImageCaption(imageSrc){
     }).then( function(response) {
         response=String(response.data);
         imageCaption = response;
+        if(imageCaption === ""){
+            console.log("The image couldn't be process!");
+        }
     });
     return imageCaption;
   }

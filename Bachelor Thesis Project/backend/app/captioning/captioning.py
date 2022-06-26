@@ -1,3 +1,4 @@
+import os
 from IPython.core.display_functions import display
 import numpy as np
 import clip
@@ -9,6 +10,8 @@ import skimage.io as io
 import PIL.Image
 from IPython.display import Image
 from model.model import ClipCaptionModel
+from urllib import request
+from multiprocessing import Lock
 
 # a torch.Tensor is a multi-dimensional matrix containing elements of a single data type
 T = torch.Tensor
@@ -135,29 +138,32 @@ class Captioning:
     # method loads the CLIP model with its corresponding weights for the selected
     # dataset and, after encoding the image, generates a caption for it
     def get_image_caption(self):
-        clip_model, preprocess = clip.load("ViT-B/32", jit=False)
-        tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
-        prefix_length = 10
-        model = ClipCaptionModel(prefix_length)
-        model.load_state_dict(torch.load(
-            "./utils/pretrained_models/conceptual_weights.pt",
-            map_location=torch.device('cpu')))
-        model = model.eval()
-        model = model.to("cpu")
-        UPLOADED_FILE = "./utils/image/image.jpg"
-        use_beam_search = False  # @param {type:"boolean"}
-        image = io.imread(UPLOADED_FILE)
-        pil_image = PIL.Image.fromarray(image)
-        pil_img = Image(filename=UPLOADED_FILE)
-        display(pil_image)
-        image = preprocess(pil_image).unsqueeze(0).to("cpu")
-        with torch.no_grad():
-            prefix = clip_model.encode_image(image).to("cpu", dtype=torch.float32)
-            prefix_embed = model.clip_project(prefix).reshape(1, prefix_length, -1)
-        if use_beam_search:
-            generated_text_prefix = self.generate_beam(model, tokenizer, embed=prefix_embed)[0]
-        else:
-            generated_text_prefix = self.generate_caption(model, tokenizer, embed=prefix_embed)
-        print('\n')
-        print(generated_text_prefix)
+        try:
+            clip_model, preprocess = clip.load("ViT-B/32", jit=False)
+            tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
+            prefix_length = 10
+            model = ClipCaptionModel(prefix_length)
+            model.load_state_dict(torch.load(
+                "./utils/pretrained_models/conceptual_weights.pt",
+                map_location=torch.device('cpu')))
+            model = model.eval()
+            model = model.to("cpu")
+            UPLOADED_FILE = "./utils/image/image.jpg"
+            use_beam_search = False  # @param {type:"boolean"}
+            image = io.imread(UPLOADED_FILE)
+            pil_image = PIL.Image.fromarray(image)
+            pil_img = Image(filename=UPLOADED_FILE)
+            display(pil_image)
+            image = preprocess(pil_image).unsqueeze(0).to("cpu")
+            with torch.no_grad():
+                prefix = clip_model.encode_image(image).to("cpu", dtype=torch.float32)
+                prefix_embed = model.clip_project(prefix).reshape(1, prefix_length, -1)
+            if use_beam_search:
+                generated_text_prefix = self.generate_beam(model, tokenizer, embed=prefix_embed)[0]
+            else:
+                generated_text_prefix = self.generate_caption(model, tokenizer, embed=prefix_embed)
+            print('\n')
+            print(generated_text_prefix)
+        except:
+            generated_text_prefix = ""
         return generated_text_prefix
