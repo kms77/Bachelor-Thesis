@@ -19,18 +19,23 @@ async function getAllImages(){
         imageAlt = auxiliarAlt.replace(/\s/g, '');
         console.log("Alt only contains whitespace (ie. spaces, tabs or line breaks)!");
       }
-      let uniqueImage = true;
-      if(checkDuplicates.has(imageSrc)){
-        let imageMapAlt = checkDuplicates.get(imageSrc);
-        uniqueImage = false;
-        console.log("Image already exists in map!");
+      if(imageAlt === ''){
+        let uniqueImage = true;
+        if(checkDuplicates.has(imageSrc)){
+          let imageMapAlt = checkDuplicates.get(imageSrc);
+          uniqueImage = false;
+          console.log("Image already exists in map!");
+        }
+        if(uniqueImage === true){
+          var imageDictionary = {};
+          imageDictionary['src'] = imageSrc;
+          imageDictionary['alt'] = imageAlt;
+          checkDuplicates.set(imageSrc, imageAlt);
+          allImages.push(imageDictionary);
+        }
       }
-      if(uniqueImage === true){
-        var imageDictionary = {};
-        imageDictionary['src'] = imageSrc;
-        imageDictionary['alt'] = imageAlt;
-        checkDuplicates.set(imageSrc, imageAlt);
-        allImages.push(imageDictionary);
+      else{
+        console.log("The image has already an alternative text!");
       }
     }
     else{

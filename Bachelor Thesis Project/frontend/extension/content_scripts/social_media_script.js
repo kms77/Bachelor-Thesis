@@ -4,11 +4,6 @@ const LANGUAGE_CODE = 'language_code';
 var currentSocialMedia = null;
 var countDonePosts = 0;
 var checkDuplicates = new Map();
-var dictionaryOfIntros = {
-    "author": ['The author of the post is: ', 'The post was written by: ', 'Profile name: '],
-    "description": ['Post description: ', 'Description: ', 'The description of the post: ', 'The author of the post said: ', 'The author wrote the following: ', 'The author posted the following: '],
-    "image": ['In the picture we have: ', 'The image can be described as: ', 'The image depicts: ', 'The image shows: ', 'In the image used by the author we can see: ', 'The image description: ']
-}
 
 var arraySocialMedia = [
     {
@@ -38,7 +33,7 @@ async function getCurrentSocialMedia(){
     let isValid = false;
     let index = 0;
     for(index= 0; index < arraySocialMedia.length; index++){
-        if (window.location.href.indexOf(arraySocialMedia[index]['URL']) > -1) {
+        if (window.location.href.indexOf(arraySocialMedia[index]['URL']) > -1){
             isValid = true;
             break;
         }
@@ -50,7 +45,7 @@ async function getCurrentSocialMedia(){
     return currentSocialMedia;
 }
 
-async function getLanguageToSpeech(message){
+async function getLanguageCode(message){
     let languagesMap = await chrome.i18n.detectLanguage(message);
     let currentLanguage = ENGLISH_LANGUAGE;
     let languageObject = ''
@@ -71,18 +66,19 @@ async function getLanguageToSpeech(message){
     else{
         languageObject = languagesJSON[ENGLISH_LANGUAGE];
     }
-    let language = languageObject[LANGUAGE_CODE];
-    return language;
+    return languageObject;
 }
 
 async function sendMessagePromise(message) {
-    let language = await getLanguageToSpeech(message);
+    let languageCode = await getLanguageCode(message);
+    let language = languageCode[LANGUAGE_CODE];
     console.log("Language: ", language);
     return new Promise((resolve, reject) => {
         chrome.runtime.sendMessage({message, language}, response => {
             if(response.complete) {
                 resolve("Done");
-            } else {
+            } 
+            else {
                 reject('Something wrong');
             }
         });
@@ -123,9 +119,14 @@ function getPostDescription(postElement, index){
         var postDescription = '';
         let auxiliarValue = '';
         let imageSrc = '';
+        let imageAlt = '';
+        let arrayOfIntros = [];
+        let currentPostLanguage = ENGLISH_LANGUAGE;
+        var author;
         auxiliarValue = postElement.querySelector(arraySocialMedia[index]["image"]);
         if(auxiliarValue !=null){
             imageSrc = auxiliarValue.getAttribute('src');
+            //imageAlt = auxiliarValue.getAttribute('alt');
             console.log("Image src: ", imageSrc);
             if(checkDuplicates.has(imageSrc)){
                 resolve(null);
@@ -135,45 +136,45 @@ function getPostDescription(postElement, index){
                 console.log("Check array: ", checkDuplicates);
             }
         }
-        //let postLanguage = ENGLISH_LANGUAGE;
         auxiliarValue = postElement.querySelector(arraySocialMedia[index]["author"]);
-        console.log("Author: ", auxiliarValue);
         if(auxiliarValue !== null){
             let saveAuthor = auxiliarValue;
-            // auxiliarValue = postElement.querySelector(arraySocialMedia[index]["description"]);
-            // if(auxiliarValue !== null){
-            // let description = (((auxiliarValue).textContent).replace(/(\r\n|\r|\n)/g, '')).trim();
-            // postLanguage = await chrome.i18n.detectLanguage(description);
-            // console.log("Language: ", postLanguage);
-            // intro = getIntroOfElement("description");
-            // postDescription = postDescription + intro + description + ". ";
-            // }
-            let author = ((saveAuthor).textContent).replace(/(\r\n|\r|\n)/g, '').trim();
+            author = ((saveAuthor).textContent).replace(/(\r\n|\r|\n)/g, '').trim();
             if(author === null){
                 resolve(null);
-            }
-            else{
-                intro = getIntroOfElement("author");
-                postDescription = postDescription + intro + author + ". ";
             }
         }
         else{
             resolve(null);
         }
         auxiliarValue = postElement.querySelector(arraySocialMedia[index]["description"]);
-        console.log("auxDescription: ", auxiliarValue);
         if(auxiliarValue !== null){
             let description = (((auxiliarValue).textContent).replace(/(\r\n|\r|\n)/g, '')).trim();
-            console.log("Description: ", description);
-
-            intro = getIntroOfElement("description");
+            let languageCode = await getLanguageCode(description);
+            code = languageCode[LANGUAGE_CODE];
+            currentPostLanguage = code.substring(0, 2);
+            arrayOfIntros = languageCode["author"];
+            intro = getIntroOfElement(arrayOfIntros);
+            postDescription = postDescription + intro + author + ". ";
+            arrayOfIntros = languageCode["description"];
+            intro = getIntroOfElement(arrayOfIntros);
             postDescription = postDescription + intro + description + ". ";
         }
+        else{
+            let languageCode = languagesJSON[currentPostLanguage];
+            arrayOfIntros = languageCode["author"];
+            intro = getIntroOfElement(arrayOfIntros);
+            postDescription = postDescription + intro + author + ". ";
+        }
         if(imageSrc !== ''){
-            let imageCaption = await getImageCaption(imageSrc);
-            if(imageCaption !== ""){
-                intro = getIntroOfElement("image");
-                postDescription = postDescription + intro + imageCaption;
+            // if(imageAlt === ''){
+                imageAlt = await getImageCaption(imageSrc);
+            // }
+            if(imageAlt !== ''){
+                let languageCode = languagesJSON[currentPostLanguage];
+                arrayOfIntros = languageCode["image"];
+                intro = getIntroOfElement(arrayOfIntros);
+                postDescription = postDescription + intro + imageAlt;
             }
         }
         resolve(postDescription);
@@ -184,12 +185,12 @@ function getRandomInteger(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
 }
 
-function  getIntroOfElement(element){
+function  getIntroOfElement(arrayOfIntros){
     let intro = '';
     let index = 0;
     let MAX_VALUE = 0;
-    MAX_VALUE = (dictionaryOfIntros[element]).length;
+    MAX_VALUE = arrayOfIntros.length;
     index = getRandomInteger(MIN_VALUE_OF_INDEX, MAX_VALUE);
-    intro = dictionaryOfIntros[element][index];
+    intro = arrayOfIntros[index];
     return intro;
 }

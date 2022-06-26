@@ -79,17 +79,14 @@ async function checkExtensionSettings(){
         if(extensionSettings[EXTENSION_STATUS] === true){
             let scrollEvent = false;
             if(extensionSettings[IMAGE_DESCRIPTION_MODE_CONSTANT] === true){
-            // if(document.hasFocus()){
                 if(!document.hidden){
                     console.log("HAS FOCUS! ");
                     let result = await getAllImages();
                     await sendImages(result);
                 }
-                //}
                 scrollEvent = true;
             }
-            if(extensionSettings[SOCIAL_MEDIA_MODE_CONSTANT] === true){
-                //if(document.hasFocus()){
+            else if(extensionSettings[SOCIAL_MEDIA_MODE_CONSTANT] === true){
                 if(!document.hidden){    
                     analyzePageData();
                 }
